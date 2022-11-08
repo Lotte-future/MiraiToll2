@@ -1,0 +1,9 @@
+{
+  "name": "command",
+  //命令前缀
+  "commandPrefix": "命令前缀",
+  //是否需要at
+  "@": false,
+  //命令前缀与主语之间是否需要空格
+  "space": false
+}

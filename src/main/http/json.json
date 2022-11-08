@@ -1,0 +1,72 @@
+{
+  "code": 0,
+  "data": {
+    "album": {
+      "count": 1,
+      "itemlist": [
+        {
+          "docid": "11081083",
+          "id": "11081083",
+          "mid": "00361E0H4LjZpU",
+          "name": "惊涛落日",
+          "pic": "http://y.gtimg.cn/music/photo_new/T002R180x180M00000361E0H4LjZpU_1.jpg",
+          "singer": "Platix_Zhang"
+        }
+      ],
+      "name": "专辑",
+      "order": 2,
+      "type": 3
+    },
+    "mv": {
+      "count": 0,
+      "itemlist": [],
+      "name": "MV",
+      "order": 3,
+      "type": 4
+    },
+    "singer": {
+      "count": 0,
+      "itemlist": [],
+      "name": "歌手",
+      "order": 1,
+      "type": 2
+    },
+    "song": {
+      "count": 4,
+      "itemlist": [
+        {
+          "docid": "256506942",
+          "id": "256506942",
+          "mid": "002TYBrX05D7ot",
+          "name": "惊涛落日",
+          "singer": "Platix_Zhang"
+        },
+        {
+          "docid": "336029868",
+          "id": "336029868",
+          "mid": "002gSQVk27VAG6",
+          "name": "惊涛落日",
+          "singer": "国风大典"
+        },
+        {
+          "docid": "371449768",
+          "id": "371449768",
+          "mid": "001k8aAn2kO3AB",
+          "name": "惊涛落日",
+          "singer": "爱喝酒的毛熊球"
+        },
+        {
+          "docid": "127545175",
+          "id": "127545175",
+          "mid": "004KBhWJ3blj4B",
+          "name": "惊涛落日",
+          "singer": "苍穹"
+        }
+      ],
+      "name": "单曲",
+      "order": 0,
+      "type": 1
+    }
+  },
+  "subcode": 0
+}

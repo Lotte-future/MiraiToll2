@@ -1,0 +1,31 @@
+# QQ 音乐 - 搜索API - 测试
+
+### 搜索API（返回JS回调函数）
+GET https://c.y.qq.com/soso/fcgi-bin/search_for_qq_cp?g_tk=5381&uin=0&format=jsonp&inCharset=utf-8&outCharset=utf-8&notice=0&platform=h5&needNewCode=1&w=惊涛落日&zhidaqu=1&catZhida=1&t=0&flag=1&ie=utf-8&sem=1&aggr=0&perpage=20&n=20&p=1&remoteplace=txt.mqq.all&_=1520833663464
+origin: https://y.qq.com
+referer: https://y.qq.com/
+
+### 搜索提示 API
+# https://c.y.qq.com/splcloud/fcgi-bin/smartbox_new.fcg?key={要搜索的歌曲}
+GET https://c.y.qq.com/splcloud/fcgi-bin/smartbox_new.fcg?key=惊涛落日
+
+### 搜索API
+POST https://u.y.qq.com/cgi-bin/musics.fcg?_=1665366728411&sign=zzbd68612e6qec1akuebskgudmncsemzw6da64e25
+#必要的请求头
+origin: https://y.qq.com
+referer: https://y.qq.com/
+content-type: application/x-www-form-urlencoded
+#必要的Cookie
+cookie: RK=mK8wyxxg78; ptcz=676c965d8d2de884048f5cf871548634557af1ee53d0adee23381a5538fcfdfc; pgv_pvid=7479011440; iip=0; eas_sid=21l6Z557V5K0h7w20213J401x4; fqm_pvqid=6768e439-1f6d-4030-ab45-30442f9a552d; ts_uid=706219369; pac_uid=1_2556608754; uin_cookie=o2556608754; ied_qq=o2556608754; Qs_lvt_323937=1657024990%2C1658213452%2C1661865071%2C1663487119; Qs_pv_323937=911876529950079600%2C2979520860270705700%2C1252423142366576600%2C2943359688081550300; ts_refer=www.baidu.com/link; tmeLoginType=2; euin=ow4k7wCzNeSk7n**; fqm_sessionid=8a9939cb-82f2-4994-af5f-3d8861543b98; pgv_info=ssid=s3894532946; _qpsvr_localtk=0.7927131312204316; login_type=1; wxunionid=; psrf_qqopenid=0DFAEB6CBE8370E2A167635A33BF6BB3; psrf_access_token_expiresAt=1673070860; psrf_qqaccess_token=701A3D810D55CA8864A2245794BA65DA; qm_keyst=Q_H_L_5hetGGVHkAyCSh-zK1nmDwFCPU2gz10u0tZJLno1bRdlihePOW8pPWA; wxopenid=; wxrefresh_token=; psrf_musickey_createtime=1665294860; psrf_qqunionid=703D13B68C5A43130FB9C9B275B27590; qm_keyst=Q_H_L_5hetGGVHkAyCSh-zK1nmDwFCPU2gz10u0tZJLno1bRdlihePOW8pPWA; qqmusic_key=Q_H_L_5hetGGVHkAyCSh-zK1nmDwFCPU2gz10u0tZJLno1bRdlihePOW8pPWA; psrf_qqrefresh_token=E36C61BFFDB2106C7428AA6BE5C6BBDD; uin=o2556608754; skey=@WXobpmDu2; ts_last=y.qq.com/n/ryqq/player
+
+#参数
+// 动参：g_tk | searchid
+{"comm":{"cv":4747474,"ct":24,"format":"json","inCharset":"utf-8","outCharset":"utf-8","notice":0,"platform":"yqq.json","needNewCode":1,"uin":2556608754,"g_tk_new_20200303":783950590,"g_tk":1384075213},"req_1":{"method":"DoSearchForQQMusicDesktop","module":"music.search.SearchCgiService","param":{"remoteplace":"txt.yqq.center","searchid":"68058318095916755","search_type":0,"query":"惊涛落日","page_num":1,"num_per_page":10}}}
+
+
+### 最新音乐
+GET https://c.y.qq.com/v8/fcg-bin/fcg_v8_toplist_cp.fcg?topid=27
+### 推荐视频
+GET https://c.y.qq.com/v8/fcg-bin/fcg_v8_toplist_cp.fcg?topid=36
+### 音乐流
+GET https://dl.stream.qqmusic.qq.com/C400002TYBrX05D7ot.m4a?guid=5485406391&vkey=8F8099AFB42A390EBEC0796F12309226B1F8506B9BB9B8815A8430EE5706FDD0F15612EB10A914DC8D7958CD528234396B35796CDFB08A6C&uin=2556608754&fromtag=0

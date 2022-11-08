@@ -1,0 +1,35 @@
+### 提交队列任务
+POST http://127.0.0.1:7860/sdapi/v1/txt2img
+accept: application/json
+Content-Type: application/json
+
+{
+  "enable_hr": false,
+  "width": 512,
+  "height": 512,
+  "denoising_strength": 0,
+  "firstphase_width": 0,
+  "firstphase_height": 0,
+  "steps": 20,
+  "prompt": "girl,happy",
+  "negative_prompt": "lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry",
+  "styles": [
+  ],
+  "seed": -1,
+  "subseed": -1,
+  "subseed_strength": 0,
+  "seed_resize_from_h": -1,
+  "seed_resize_from_w": -1,
+  "batch_size": 1,
+  "n_iter": 1,
+  "cfg_scale": 7,
+  "restore_faces": false,
+  "tiling": false,
+  "eta": 0,
+  "s_churn": 0,
+  "s_tmax": 0,
+  "s_tmin": 0,
+  "s_noise": 1,
+  "override_settings": {},
+  "sampler_index": "Euler"
+}

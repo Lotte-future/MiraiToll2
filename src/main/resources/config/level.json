@@ -1,0 +1,19 @@
+{
+  "systems": [],
+  "levels": [
+    //配置群权限（组）
+    {
+      "groupid": 0,//群id
+      "roots": [],//root权限....
+      "firsts": [],
+      "seconds": []
+    },
+    {
+      "groupid": 0,//群id
+      "roots": [],//root权限....
+      "firsts": [],
+      "seconds": []
+    }
+    //, ....
+  ]
+}
