@@ -8,5 +8,12 @@
       <jdbc-url>jdbc:h2:D:\code\MiraiToll2\data\db\gloval</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
+    <data-source source="LOCAL" name="3619430796" uuid="655f47c5-ac5e-43d1-9012-a17004fba782">
+      <driver-ref>h2.unified</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.h2.Driver</jdbc-driver>
+      <jdbc-url>jdbc:h2:D:\code\MiraiToll2\data\db\3619430796</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
   </component>
 </project>

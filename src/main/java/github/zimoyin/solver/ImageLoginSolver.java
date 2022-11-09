@@ -1,8 +1,7 @@
 package github.zimoyin.solver;
 
-import github.zimoyin.solver.gui.CommunicationChannelOfTicket;
-import github.zimoyin.solver.gui.CommunicationChannelOfURL;
-import github.zimoyin.solver.gui.LoginSolverGuiRun;
+import github.zimoyin.solver.communication.CommunicationChannelOfTicket;
+import github.zimoyin.solver.communication.CommunicationChannelOfURL;
 import kotlin.coroutines.Continuation;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +30,6 @@ public class ImageLoginSolver extends LoginSolver {
      * <p>
      * 抛出任意其他 [Throwable] 将视为验证码解决器的自身错误.
      *
-     * @throws LoginFailedException
      */
     @Nullable
     @Override
@@ -53,7 +51,6 @@ public class ImageLoginSolver extends LoginSolver {
      * 抛出任意其他 [Throwable] 将视为验证码解决器的自身错误.
      *
      * @return 验证码解决成功后获得的 ticket.
-     * @throws LoginFailedException
      */
     @Nullable
     @Override
@@ -62,7 +59,7 @@ public class ImageLoginSolver extends LoginSolver {
                                        @NotNull Continuation<? super String> continuation) {
         log.info("[系统日志] 登录器实现类正在处理验证码滑块验证");
         log.info("[系统日志] 滑块验证地址: {}", url);
-        LoginSolverGuiRun.getInstance();
+        TypeSelect.open();
         CommunicationChannelOfURL.getInstance().setValue(url);
         return CommunicationChannelOfTicket.getInstance().getValue();
     }
@@ -80,11 +77,11 @@ public class ImageLoginSolver extends LoginSolver {
      * 抛出任意其他 [Throwable] 将视为验证码解决器的自身错误.
      *
      * @return 任意内容. 返回值保留以供未来更新.
-     * @throws LoginFailedException
      */
     @Nullable
     @Override
     public String onSolveUnsafeDeviceLoginVerify(@NotNull Bot bot, @NotNull String url, @NotNull Continuation<? super String> continuation) {
+        TypeSelect.open();
         CommunicationChannelOfURL.getInstance().setValue(url);
         return CommunicationChannelOfTicket.getInstance().getValue();
     }
@@ -110,7 +107,6 @@ public class ImageLoginSolver extends LoginSolver {
      * <p>
      * 抛出任意其他 [Throwable] 将视为验证码解决器的自身错误.
      *
-     * @throws LoginFailedException
      * @since 验证结果, 可通过解决 [DeviceVerificationRequests] 获得.
      * @since 2.13
      */
@@ -121,6 +117,7 @@ public class ImageLoginSolver extends LoginSolver {
                                             @NotNull Continuation<? super DeviceVerificationResult> $completion) {
         log.error("onSolveDeviceVerification is not override");
         log.error("不支持短信登录,使用其他方式登录，请验证");
+        TypeSelect.open();
          /**
          * 其他验证方式. 在不为 `null` 时表示支持该验证方式.
          */

@@ -2,6 +2,7 @@ package github.zimoyin.mtool.dao;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.sql.Statement;
 import java.util.Arrays;
@@ -25,20 +26,23 @@ public class H2ExecuteProxyFactory {
         return (Statement) Proxy.newProxyInstance(
                 target.getClass().getClassLoader(),
                 target.getClass().getInterfaces(),
-                (proxy, method, args) -> {
-                    //执行目标对象方法
-                    Object returnValue = null;
-                    try {
-                        returnValue = method.invoke(target, args);
-                    } catch (Exception e) {
-                        if (method.getName().equalsIgnoreCase("execute")) log.info("SQL Ages Error: {}", args != null ? Arrays.asList(args) : "");
-                        else log.error("H2的动态代理类执行，执行被代理类方法时出现异常",e);
-                    }
-                    if (method.getName().equalsIgnoreCase("execute")) log.info("SQL Args: {}", args != null ? Arrays.asList(args) : "");
-                    return returnValue;
-                }
+                this::invoke
         );
     }
 
+    private Object invoke(Object proxy, Method method, Object[] args) {
+        //执行目标对象方法
+        Object returnValue = null;
+        try {
+            returnValue = method.invoke(target, args);
+        } catch (Exception e) {
+            if (method.getName().contains("execute"))
+                log.error("SQL Ages Error: {}", args != null ? Arrays.asList(args) : "");
+            else log.error("H2的动态代理类执行，执行被代理类方法时出现异常", e);
+        }
+        if (method.getName().contains("execute"))
+            log.debug("SQL Args: {}", args != null ? Arrays.asList(args) : "");
+        return returnValue;
+    }
 }
 

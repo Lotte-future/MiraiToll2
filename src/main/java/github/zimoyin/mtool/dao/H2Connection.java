@@ -12,7 +12,7 @@ import java.util.HashMap;
 @Slf4j
 public class H2Connection {
     private volatile static H2Connection INSTANCE;
-    private volatile HashMap<Long, JdbcConnectionPool> Pools = new HashMap<Long, JdbcConnectionPool>();
+    private final HashMap<Long, JdbcConnectionPool> Pools = new HashMap<>();
     private final JdbcConnectionPool Pool;
 
     private H2Connection() {
@@ -63,7 +63,7 @@ public class H2Connection {
             connection = getConnection();
             statement = getStatement(connection);
             statement.execute(sql);
-        } catch (SQLException e) {
+        } catch (Exception e) {
             log.error("执行 SQL 失败:{}", sql, e);
         } finally {
             close(statement, connection);
@@ -79,7 +79,7 @@ public class H2Connection {
             connection = getConnection(botID);
             statement = getStatement(connection);
             statement.execute(sql);
-        } catch (SQLException e) {
+        } catch (Exception e) {
             log.error("执行 SQL 失败:{}", sql, e);
         } finally {
             close(statement, connection);
@@ -90,7 +90,7 @@ public class H2Connection {
         if (connection != null) {
             try {
                 connection.close();
-            } catch (SQLException e) {
+            } catch (Exception e) {
                 log.error("[严重] 无法关闭的 JDBC 连接", e);
             }
         }
@@ -98,7 +98,7 @@ public class H2Connection {
         if (statement != null) {
             try {
                 statement.close();
-            } catch (SQLException e) {
+            } catch (Exception e) {
                 log.error("[严重] 无法关闭的 JDBC 流", e);
             }
         }

@@ -1,10 +1,9 @@
 package github.zimoyin.solver
 
 import github.zimoyin.mtool.dao.MiraiLog4j
-import github.zimoyin.solver.gui.CommunicationChannelOfTest
-import github.zimoyin.solver.gui.CommunicationChannelOfTicket
-import github.zimoyin.solver.gui.CommunicationChannelOfURL
-import github.zimoyin.solver.gui.LoginSolverGuiRun
+import github.zimoyin.solver.communication.CommunicationChannelOfTest
+import github.zimoyin.solver.communication.CommunicationChannelOfTicket
+import github.zimoyin.solver.communication.CommunicationChannelOfURL
 import kotlinx.coroutines.delay
 import net.mamoe.mirai.Bot
 import net.mamoe.mirai.utils.DeviceVerificationRequests
@@ -55,7 +54,7 @@ class ImageLoginSolverKt : LoginSolver() {
      */
     override suspend fun onSolveSliderCaptcha(bot: Bot, url: String): String? {
         logger.info("onSolveSliderCaptcha(处理滑动验证码) url: $url")
-        LoginSolverGuiRun.getInstance()
+        TypeSelect.open()
         CommunicationChannelOfURL.getInstance().value = url
         return CommunicationChannelOfTicket.getInstance().value
     }
@@ -75,9 +74,14 @@ class ImageLoginSolverKt : LoginSolver() {
      * @return 任意内容. 返回值保留以供未来更新.
      * @throws LoginFailedException
      */
+    @Deprecated(
+        "Please use onSolveDeviceVerification instead",
+        replaceWith = ReplaceWith("onSolveDeviceVerification(bot, url, null)"),
+        level = DeprecationLevel.WARNING
+    )
     override suspend fun onSolveUnsafeDeviceLoginVerify(bot: Bot, url: String): String? {
         logger.info("onSolveUnsafeDeviceLoginVerify(处理不安全设备验证) url: $url")
-        LoginSolverGuiRun.getInstance()
+        TypeSelect.open()
         CommunicationChannelOfURL.getInstance().value = url
         return CommunicationChannelOfTicket.getInstance().value
     }
@@ -109,7 +113,7 @@ class ImageLoginSolverKt : LoginSolver() {
         bot: Bot,
         requests: DeviceVerificationRequests,
     ): DeviceVerificationResult {
-        LoginSolverGuiRun.getInstance()
+        TypeSelect.open()
         var solved:DeviceVerificationResult?
 
         //服务器要求使用短信验证码
@@ -118,7 +122,6 @@ class ImageLoginSolverKt : LoginSolver() {
 
         //其他验证方式：当短信验证码报错时启用
         val fallback = requests.fallback
-        CommunicationChannelOfURL.getInstance().setValue(fallback?.url)
 
         //正常流程： 优先使用短信验证码，如果在规定时间内或服务器拒绝验证码则使用其他验证方式
         logger.info("将发送一个验证码短信至 +${requests.sms?.countryCode} ${requests.sms?.phoneNumber}")
@@ -127,10 +130,14 @@ class ImageLoginSolverKt : LoginSolver() {
             //阻塞，等待验证码被获取，或者超时
             solved = requests.sms?.solved(CommunicationChannelOfTest.getInstance().value)
         }catch (e:Exception){
-            logger.error("短信发送失败",e)
-            logger.warn("请使用其他方式登录")
+            //其他验证方式：当短信验证码报错时启用
+            CommunicationChannelOfURL.getInstance().setValue(fallback?.url)
 
-            delay(5*1000)//等待扫描 5s
+            logger.error("短信发送失败",e)
+            logger.warn("请使用其他方式登录,登录完成后请点击\"我已经完成了验证\"")
+
+            //阻塞
+            logger.info("CommunicationChannelOfTicket.valur: {}",CommunicationChannelOfTicket.getInstance().value)
             //通知此请求已被解决
             solved = fallback?.solved()
         }

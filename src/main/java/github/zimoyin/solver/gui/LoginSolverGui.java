@@ -1,5 +1,8 @@
 package github.zimoyin.solver.gui;
 
+import github.zimoyin.solver.communication.CommunicationChannelOfTest;
+import github.zimoyin.solver.communication.CommunicationChannelOfTicket;
+import github.zimoyin.solver.communication.CommunicationChannelOfURL;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
@@ -50,7 +53,13 @@ public class LoginSolverGui extends Application {
             CommunicationChannelOfTest.getInstance().setValue(textField.getText().trim());
         });
         //获取Ticket
-        button.setOnAction(event -> getTicket());
+        button.setOnAction(event -> {
+            getTicket();
+            if (CommunicationChannelOfTicket.getInstance().size() <=0) {
+                log.info("无法获取到 Ticket，程序将会取消阻塞代码并允许");
+                CommunicationChannelOfTicket.getInstance().setValue("未能检测到Ticket，自动判断为允许运行阻塞代码");
+            }
+        });
         new Thread(() -> {
             Thread.currentThread().setName("login-gui-getTicket");
             long start;
