@@ -1,6 +1,6 @@
 package github.zimoyin.application.command;
 
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSONObject;
 import github.zimoyin.mtool.annotation.Command;
 import github.zimoyin.mtool.annotation.CommandClass;
 import github.zimoyin.mtool.command.CommandData;

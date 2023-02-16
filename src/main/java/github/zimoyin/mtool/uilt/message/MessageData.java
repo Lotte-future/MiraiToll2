@@ -13,24 +13,18 @@ import java.util.ArrayList;
 public class MessageData {
     /**
      * 获取文本内容
-     * @param event
-     * @return
      */
     public static long getGroupID(MessageEvent event){
         return event.getSubject().getId();
     }
     /**
      * 获取文本内容
-     * @param event
-     * @return
      */
     public static long getUserID(MessageEvent event){
         return event.getSource().getFromId();
     }
     /**
      * 获取文本内容
-     * @param event
-     * @return
      */
     public static String getUserName(MessageEvent event){
         return event.getSender().getNick();
@@ -57,13 +51,28 @@ public class MessageData {
         return (PlainText) chain.stream().filter(PlainText.class::isInstance).findFirst().orElse(null);
     }
     /**
+     *  ServiceMessage 服务消息 (XML, JSON)
      * 获取（不稳定）服务消息
-     * @param event
-     * @return
      */
     public static SimpleServiceMessage getSimpleServiceMessage(MessageEvent event){
         MessageChain chain = event.getMessage();
         return (SimpleServiceMessage) chain.stream().filter(SimpleServiceMessage.class::isInstance).findFirst().orElse(null);
+    }
+    /**
+     *  ServiceMessage 服务消息 (XML, JSON)
+     * 获取（不稳定）服务消息
+     */
+    public static ServiceMessage getServiceMessage(MessageEvent event){
+        MessageChain chain = event.getMessage();
+        return (ServiceMessage) chain.stream().filter(ServiceMessage.class::isInstance).findFirst().orElse(null);
+    }
+
+    /**
+     * LightApp 小程序 (JSON)
+     */
+    public static LightApp getLightApp(MessageEvent event){
+        MessageChain chain = event.getMessage();
+        return (LightApp) chain.stream().filter(LightApp.class::isInstance).findFirst().orElse(null);
     }
 
     /**

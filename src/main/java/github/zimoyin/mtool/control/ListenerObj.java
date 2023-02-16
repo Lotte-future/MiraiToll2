@@ -8,6 +8,7 @@ import net.mamoe.mirai.event.Listener;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.function.Consumer;
 
 /**
  * 监听对象
@@ -29,19 +30,32 @@ public class ListenerObj {
      */
     private ArrayList<ListenerMethod> ListenerMethods;
 
+    /**
+     * 这是否是个有效监听器
+     */
+    private boolean isListening = false;
+
     public ListenerObj(Class<?> cls) {
         try {
+            if (!isControllerClass(cls)) {
+                log.error("初始化监听器注册失败，无法对非 Controller 的类进行监听: {}",cls.getName(),new IllegalArgumentException("this 'Controller' class is not a valid value"));
+                return;
+            }
             this.cls = cls;
             this.obj = cls.newInstance();
         } catch (Exception e) {
             log.error(cls + " 实例创建失败,无法对其进行监听方法注册", e);
         }
+        isListening = true;
+    }
+
+    private boolean isControllerClass(Class<?> cls) {
+        //如果是Controller的子类说明是处理器类
+        return cls.getSuperclass() == Controller.class || cls.isAnnotationPresent(github.zimoyin.mtool.annotation.Controller.class);
     }
 
     /**
      * 获取在该类下管理的方法监听器
-     *
-     * @return
      */
     public ArrayList<Listener> getListeners() {
         ArrayList<Listener> listeners = new ArrayList<Listener>();
@@ -82,11 +96,28 @@ public class ListenerObj {
     public void start() {
         //TODO: 开启监听处理，让该类下所有的监听器(方法)都开启逻辑处理。如果没有注册则不行
         //但是没有停止监听
+        ListenerMethods.forEach(listenerMethod -> listenerMethod.setExecute(false));
     }
 
     public void stop() {
         //TODO: 停止监听处理，让该类下所有的监听器(方法)都停止逻辑处理。如果没有注册则不行
         //但是没有停止监听
+        ListenerMethods.forEach(listenerMethod -> listenerMethod.setExecute(true));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ListenerObj)) return false;
+
+        ListenerObj that = (ListenerObj) o;
+
+        return cls.equals(that.cls);
+    }
+
+    @Override
+    public int hashCode() {
+        return cls.hashCode();
     }
 
     /**
@@ -144,8 +175,14 @@ public class ListenerObj {
             this.cls = method.getDeclaringClass();
             this.eventType = method.getAnnotation(EventType.class);
             //判断是否是个合法的监听方法
-            if (method.getParameterTypes().length != 1 || eventType == null) {
-                log.error(cls + " 类下 " + method + " 方法不是一个合格的监听方法，请保证该方法参数唯一，且为一个事件或其子类");
+            if (method.getParameterTypes().length != 1) {
+                log.error(cls + " 类下 " + method + " 方法不是一个合格的监听方法，请保证该方法参数唯一且为一个事件或其子类");
+                return;
+            }
+            //判断是否存在事件类型
+            if (eventType == null){
+                log.error(cls + " 类下 " + method + " 方法没有指定监听事件类型，请使用 @EventType 注解指定");
+                return;
             }
             //如果注解的事件类型的值不再是默认就说明，注解的值被修改了，那就是false，这样注册监听的话用的是注解的事件类型而不是方法中定义的事件类型
 //            this.eventClas = eventType.value();
@@ -181,12 +218,12 @@ public class ListenerObj {
         /**
          * 执行这个方法
          *
-         * @param event
+         * @param event 事件
          */
         public void invoke(Event... event) {
             try {
                 if (!isExecute()) return;
-                method.invoke(obj, event);
+                method.invoke(obj,event);
             } catch (Exception e) {
                 log.error("(监听处理)方法执行失败 : {}", method, e);
             }

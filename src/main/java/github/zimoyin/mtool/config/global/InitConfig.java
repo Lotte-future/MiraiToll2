@@ -1,7 +1,10 @@
 package github.zimoyin.mtool.config.global;
 
 
-import com.alibaba.fastjson.JSONObject;
+
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
+import github.zimoyin.mtool.uilt.OSinfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,13 +30,14 @@ public final class InitConfig {
                 " / /__/ /_/ / / __ | / // / _/ /   /    / / (_ / \n" +
                 "/____/\\____/ /_/ |_|/____/ /___/  /_/|_/  \\___/  \n" +
                 "                                                 \n\n");
-        logger.info("温馨提示： device.json文件是你虚拟设备信息，这意味着你可以靠他来在不同的设备上登录，而不需要进行设备验证等...(前提是这个虚拟设备登陆过)");
+        logger.info("温馨提示： device.json文件是你虚拟设备信息，这意味着你可以靠他来在不同的设备上登录，而不需要进行设备验证等...");
         logger.info("温馨提示： 请不要把 device.json 文件发给陌生的人");
-        logger.info("温馨提示： 第一次运行会生成 config.properties 配置文件，请打开看看它");
+        logger.info("温馨提示： 第一次运行会生成 .\\data\\config\\gloval\\* 配置文件，请打开看看它");
         logger.info("温馨提示： 如果你无法登陆，请找MiraiAndroid 来获取device.json 导入到项目里来");
         logger.info("温馨提示： 如果你无法登陆且不想那么麻烦，请用手机QQ打开设置-》 账号安全 -》 登陆设备管理（关掉登陆保护）/关掉安全登陆检测。如果你中途开启了那么会挂起程序进行设备验证");
         logger.info("温馨提示： 如果您遇到了bug请把(后缀.log)日志发给开发者（qq:2556608754）");
-        logger.info("java版本： " + System.getProperty("java.version"));
+        logger.info("JAVA_VERSION： " + System.getProperty("java.version"));
+        logger.info("OS_NAME： " + OSinfo.getOSname());
 
         //创建配置文件的路径文件夹
         boolean mkdirs = new File("./data/config/gloval/").mkdirs();
@@ -41,7 +45,7 @@ public final class InitConfig {
 
         //将配置文件扔到外面
         InputStream resourceAsStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("config/config.json");//加载配置文件模板注册信息
-        Config configs = JSONObject.parseObject(resourceAsStream, Config.class);//实例化文件模板注册信息
+        Config configs = JSON.parseObject(resourceAsStream, Config.class);//实例化文件模板注册信息
         for (JSONObject json : configs.getConfig()) {//遍历所有的注册信息
             json.entrySet().forEach(entry -> {
                 String key = entry.getKey();

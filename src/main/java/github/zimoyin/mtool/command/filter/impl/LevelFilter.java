@@ -7,7 +7,6 @@ import github.zimoyin.mtool.command.CommandSet;
 import github.zimoyin.mtool.command.filter.AbstractFilter;
 import github.zimoyin.mtool.command.filter.CommandFilter;
 import github.zimoyin.mtool.command.filter.FilterTable;
-import github.zimoyin.mtool.command.filter.Level;
 import net.mamoe.mirai.event.events.MessageEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +14,7 @@ import org.slf4j.LoggerFactory;
 /**
  * 命令等级过滤器
  */
+@Filter
 public class LevelFilter extends AbstractFilter {
     private final CommandSet<String, CommandObj> commands = CommandSet.getInstance();
     private Filter annotation;
@@ -44,7 +44,7 @@ public class LevelFilter extends AbstractFilter {
         //查询用户在此群的权限
         Level level0 = FilterTable.getInstance().getLevel(groupID, userID);
         if (level0 == null) return false;
-        logger.debug("权限过滤器：在 {} 群 的 {} 权限是 {}({})，命令所需的权限为：{}({}),放行: {}", groupID, userID, level0, level0.getLevel(),level, level.getLevel(), level.getLevel() >= level0.getLevel());
+        logger.debug("全局权限过滤器：在 {} 群 的 {} 权限是 {}({})，命令所需的权限为：{}({}),放行: {}", groupID, userID, level0, level0.getLevel(),level, level.getLevel(), level.getLevel() >= level0.getLevel());
         //当用户权限的数值大于命令权限的数值则禁止执行
         return level.getLevel() >= level0.getLevel();
     }

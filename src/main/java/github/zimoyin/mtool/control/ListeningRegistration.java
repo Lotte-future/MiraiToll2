@@ -28,11 +28,21 @@ public class ListeningRegistration {
         registration(new ListenerObj(cls));
     }
 
+    /**
+     * 创建监听
+     *
+     * @param cls 带有处理方法的类（会通过cls创建对象）
+     */
+    public static void registration(Class<?> cls) {
+        new ListeningRegistration(cls);
+    }
 
     /**
      * 注册监听
      */
     private void registration(ListenerObj listener) {
+        //禁止监听器为null 或 监听器不是一个有效的监听器就禁止注册
+        if (listener == null || !listener.isListening()) return;
         //如果监听没有成功的添加进集合就禁止进行注册
         if (!listeners.add(listener)) return;
         log.debug(" [系统日志]加载控制器类: " + listener.getCls());
@@ -43,11 +53,13 @@ public class ListeningRegistration {
     }
 
     /**
-     * 注册监听
+     * 注册监听: 对监听器中的方法进行注册监听
+     * 注意此方法可以可以被静态调用，同时参数不会被此方法检测是否有效，所以请谨慎调用。
+     * 此方法可以将一个非 Controller 的类 下的监听方法进行注册，如果你选择这样为你的方法进行这种注册方式那么请对他负责
      *
      * @param listenerMethod 监听
      */
-    public static void newListener0(ListenerObj.ListenerMethod listenerMethod) {
+    public static void newListener0(ListenerObj.ListenerMethod listenerMethod) throws NullPointerException {
         //创建监听
         //执行处理方法
         listenerMethod.setExecute(true);
@@ -64,7 +76,7 @@ public class ListeningRegistration {
      * 创建临时监听对象
      *
      * @param eventClass 事件类型
-     * @param runnable   任务类
+     * @param runnable   任务类： 任务类的泛型请指定为 eventClass 的子类、父类、或者本身，但请勿指定其兄弟类。这里推荐使用其本身或者其子类
      * @Title 创建临时监听
      * @例子 <p>
      * ListeningRegistration.newTempListener0(GroupMessageEvent.class, new EventTask<GroupMessageEvent>() {
@@ -75,8 +87,9 @@ public class ListeningRegistration {
      * });
      * </p>
      */
-    public static void newTempListener(Class<? extends Event> eventClass, EventTask<? extends MessageEvent> runnable) {
+    public static void newTempListener(Class<? extends Event> eventClass, EventTask<? extends Event> runnable) {
         TempListenerSet tempListenerSet = TempListenerSet.getInstance();
+        runnable.init();
         //创建监听：允许监听自定义事件
         Listener<? extends Event> tempListener = GlobalEventChannel.INSTANCE.subscribeAlways(eventClass, event -> {
             //多线程执行处理方法，防止处理方法中有阻塞操作
@@ -84,13 +97,16 @@ public class ListeningRegistration {
                 //执行任务类中的方法，并接受返回值
                 boolean run = false;
                 try {
-                    run = runnable.run(event);
+                    if (!runnable.isTimeoutDead()) run = runnable.run(event);
                 } catch (Exception e) {
-                    log.error("临时监听执行失败：TempListener[{}]", runnable, e);
+                    log.error("临时监听执行失败(来自监听实现的错误)：TempListener[{}]", runnable, e);
                 }
                 //返回值为 true 时关闭临时监听,或者监听时间大于了监听存活时间时关闭监听
-                if (run || System.currentTimeMillis() >= runnable.getTimeOfDeath()) {
-
+                if (run || runnable.isTimeoutDead()) {
+                    //执行死亡方法
+                    runnable.dead();
+                    if (run) runnable.closeDead();
+                    if (runnable.isTimeoutDead()) runnable.timeoutDead();
                     //从临时监听集合中获取到监听并注销他
                     //监听的key就是一个任务类的实例对象，他在内存中是唯一的
                     tempListenerSet.get(runnable).complete();
@@ -98,9 +114,9 @@ public class ListeningRegistration {
                         //移除临时监听
                         tempListenerSet.remove(runnable);
                     } catch (Exception e) {
-                        log.error("TempListener[" + runnable + "]" + " 临时监听关闭失败", e);
+                        log.error("TempListener[" + runnable + "]" + " 临时监听从注册列表移除失败", e);
                     }
-                    log.debug(runnable + "  临时监听{}关闭:  ", (System.currentTimeMillis() >= runnable.getTimeOfDeath()) ? "超时" : "主动");
+                    log.debug( "临时监听{}关闭: TempListener[{}]({})", (runnable.isTimeoutDead()) ? "超时" : "主动",runnable,runnable.getDescription());
                 }
             });
         });

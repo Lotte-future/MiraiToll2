@@ -1,6 +1,7 @@
 package github.zimoyin.mtool.dao;
 
-import com.alibaba.fastjson.JSONObject;
+
+import com.alibaba.fastjson2.JSONObject;
 
 import java.sql.*;
 import java.util.ArrayList;

@@ -17,6 +17,7 @@ public class CommandSet<S,C> extends HashMap<String,CommandObj> {
     public static synchronized CommandSet<String,CommandObj> getInstance(){
         if (INSTANCE == null){
             INSTANCE = new CommandSet<String,CommandObj>();
+            new CommandLoadInit(INSTANCE).init();
         }
         return INSTANCE;
     }

@@ -29,7 +29,10 @@ public class ListenerSet extends HashSet<ListenerObj> {
     @Override
     public boolean add(ListenerObj listener) {
         //禁止二次添加
-        if (contains(listener)) return false;
+        if (contains(listener)) {
+            log.warn("重复添加的监听: {}",listener);
+            return false;
+        }
         //检测过往的监听方法是否注册了监听，不检测当前传入的监听方法
         listenerExists();
         return super.add(listener);

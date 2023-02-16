@@ -1,4 +1,4 @@
-package github.zimoyin.mtool.command.filter;
+package github.zimoyin.mtool.command.filter.impl;
 
 public enum Level {
     /**

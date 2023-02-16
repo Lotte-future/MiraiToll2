@@ -1,8 +1,10 @@
 package github.zimoyin.mtool.dao;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
+
+
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONArray;
+import com.alibaba.fastjson2.JSONObject;
 
 import java.io.*;
 import java.util.Deque;
@@ -224,6 +226,7 @@ public class JsonSerializeUtil {
         }
     }
 
+    @Deprecated
     public static Path getJsonPath() {
         return new Path();
     }
@@ -233,6 +236,7 @@ public class JsonSerializeUtil {
      * json解析类
      * 不应该放在这里，下次移出去
      */
+    @Deprecated
     public static class Path {
 
         public static void main(String[] args) {
@@ -344,7 +348,7 @@ public class JsonSerializeUtil {
          */
         public JSONArray readArray(JSONObject json, String xpath) {
             try {
-                return JSONObject.parseArray(read(json, xpath));
+                return JSON.parseArray(read(json, xpath));
             } catch (NullPointerException e) {
                 throw new NullPointerException("XPath路径指向目标无效");
             }
@@ -403,7 +407,7 @@ public class JsonSerializeUtil {
                  * 推进路径，让获取到的当前路径的值，作为下一次获取路径的依据
                  */
                 if (isArray(s1)) {
-                    jsonArray = JSONObject.parseArray(s1);
+                    jsonArray = JSON.parseArray(s1);
                     jsonObject = null;
                     continue;
                 }

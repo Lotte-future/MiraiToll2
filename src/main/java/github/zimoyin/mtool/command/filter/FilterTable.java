@@ -1,6 +1,7 @@
 package github.zimoyin.mtool.command.filter;
 
 
+import github.zimoyin.mtool.command.filter.impl.Level;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -9,8 +10,8 @@ import java.util.HashMap;
 /**
  * 过滤表（权限白名单表）
  * 向表里面填充即可设置权限
+ * 该表由应用维护，系统不维护此表，仅提供基础的删除、添加、查询
  */
-@Deprecated //等级配置文件的反序列化与序列化与更新
 @Data
 public class FilterTable {
     private volatile  static FilterTable obj;
@@ -52,7 +53,7 @@ public class FilterTable {
      * @param userID 用户id
      * @return
      */
-    public Level getLevel(long groupID,long userID) {
+    public Level getLevel(long groupID, long userID) {
         //判断是否是System 权限的人
         if (system.contains(userID)){
             return Level.System;
@@ -88,6 +89,13 @@ public class FilterTable {
         this.root.put(groupID, longs);
     }
 
+    public void removeRoot(long groupID, long userID){
+        ArrayList<Long> longs = this.root.get(groupID);
+        if (longs == null) return;
+        longs.remove(userID);
+        removeNullGroupTable(groupID);
+    }
+
     /**
      * 为一个群添加个 First 权限级别的人
      * @param groupID
@@ -100,6 +108,13 @@ public class FilterTable {
         this.first.put(groupID, longs);
     }
 
+    public void removeFirst(long groupID, long userID){
+        ArrayList<Long> longs = this.first.get(groupID);
+        if (longs == null) return;
+        longs.remove(userID);
+        removeNullGroupTable(groupID);
+    }
+
     /**
      * 为一个群添加个 Second 权限级别的人
      * @param groupID
@@ -110,5 +125,19 @@ public class FilterTable {
         if (longs == null) longs = new ArrayList<Long>();
         longs.add(userID);
         this.second.put(groupID, longs);
+    }
+
+    public void removeSecond(long groupID, long userID){
+        ArrayList<Long> longs = this.second.get(groupID);
+        if (longs == null) return;
+        longs.remove(userID);
+        removeNullGroupTable(groupID);
+    }
+
+
+    public void removeNullGroupTable(long groupID){
+        if (root.get(groupID) != null && root.get(groupID).size() == 0) root.remove(groupID);
+        if (first.get(groupID) != null && first.get(groupID).size() == 0) root.remove(groupID);
+        if (second.get(groupID) != null && second.get(groupID).size() == 0) root.remove(groupID);
     }
 }

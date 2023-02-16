@@ -9,6 +9,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
 
+/**
+ * H2 数据库
+ */
 @Slf4j
 public class H2Connection {
     private volatile static H2Connection INSTANCE;

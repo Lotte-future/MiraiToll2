@@ -1,11 +1,12 @@
 package github.zimoyin.mtool.config.global;
 
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSONObject;
 import github.zimoyin.mtool.dao.JsonSerializeUtil;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 配置命令等级管理器

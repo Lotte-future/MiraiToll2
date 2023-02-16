@@ -44,7 +44,7 @@ public class HttpClientUtils {
     private static final String ENCODING = "UTF-8";
 
     // 设置连接超时时间，单位毫秒。
-    private static final int CONNECT_TIMEOUT = 6 * 1000;
+    private static final int CONNECT_TIMEOUT = 15 * 1000;
 
     // 请求获取数据的超时时间(即响应时间)，单位毫秒。
     private static final int SOCKET_TIMEOUT = 5 * 60 * 1000;
@@ -210,7 +210,7 @@ public class HttpClientUtils {
      * @param url     请求地址
      * @param headers 请求头集合
      * @param params  请求参数集合
-     *                //文件或字符串等
+     * @param body    //文件或字符串等
      *                HttpEntity reqEntity = MultipartEntityBuilder.create().addPart("file", bin).addPart("comment", comment).build();
      *                //字符串 (注意设置请求头)
      *                HttpEntity reqEntity = StringEntity("json/text");

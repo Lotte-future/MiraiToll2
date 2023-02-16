@@ -5,19 +5,26 @@ import github.zimoyin.mtool.command.filter.CommandFilter;
 import github.zimoyin.mtool.control.ListenerSet;
 import github.zimoyin.mtool.dao.H2Connection;
 import lombok.Data;
+import lombok.Getter;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import net.mamoe.mirai.event.Event;
 import net.mamoe.mirai.event.events.MessageEvent;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.function.Predicate;
 
 
 /**
  * 命令对象
  */
-@Data
+//@Data
+@Getter
+@ToString
+
 @Slf4j
 public class CommandObj {
     /**
@@ -118,7 +125,7 @@ public class CommandObj {
 //        if (parameterTypes.length != 1) throw new IllegalArgumentException("不合法的方法参数，参数不是为恒值1个");
 //        if (parameterTypes[0].isAssignableFrom(event.getClass())) method.invoke(commandObject, event);
 //        else if (parameterTypes[0].isAssignableFrom(CommandData.class)) method.invoke(commandObject, new CommandData(event));
-       //上面代码更新为下面代码
+        //上面代码更新为下面代码
         CommandData commandData = new CommandData(event);
         invoke(
                 //机器人相关
@@ -146,7 +153,15 @@ public class CommandObj {
         if (commandObject == null) commandObject = commandClass.newInstance();
         Class<?>[] types = method.getParameterTypes();
         Object[] objects = sortObjects(types, objectToMap(args));
-        method.invoke(commandObject, objects);
+        Object invoke = method.invoke(commandObject, objects);
+
+        //如果有返回值的话
+        if (method.getReturnType().equals(String.class) && invoke != null && invoke.toString() != null) {
+            Object obj = Arrays.stream(args).filter(object -> object.getClass().isAssignableFrom(CommandData.class)).findFirst().orElse(null);
+            if (obj == null) return;
+            CommandData data = (CommandData) obj;
+            data.sendMessage(invoke.toString());
+        }
     }
 
     /**
@@ -163,13 +178,22 @@ public class CommandObj {
             if (objs[i] == null) {
                 for (Class<?> cls : objectToMap.keySet()) {
                     //判断是否存在继承关系
-                    if (cls.isAssignableFrom(types[i])|| types[i].isAssignableFrom(cls)) {
+                    if (cls.isAssignableFrom(types[i]) || types[i].isAssignableFrom(cls)) {
                         objs[i] = objectToMap.get(cls);
                         break;
                     }
                 }
             }
-            if (objs[i] == null) throw new IllegalArgumentException("参数列表无法找到的参数:" + types[i]);
+            //如果参数列表没有提供命令方法所需要的参数则尝试new一个
+            if (objs[i] == null) {
+                //尝试new一个，如果失败就抛出异常
+                try {
+                    objs[i] = types[i].newInstance();
+                } catch (Exception e) {
+                    throw new IllegalArgumentException("参数列表无法找到的参数:" + types[i], new NullPointerException("无法提供反射创建该参数的实例对象:" + types[i]));
+
+                }
+            }
         }
         return objs;
     }

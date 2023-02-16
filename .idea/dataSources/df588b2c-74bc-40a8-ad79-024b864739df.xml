@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dataSource name="gloval">
-  <database-model serializer="dbm" dbms="H2" family-id="H2" format-version="4.43">
+  <database-model serializer="dbm" dbms="H2" family-id="H2" format-version="4.45">
     <root id="1">
       <ServerVersion>2.1.210</ServerVersion>
     </root>
@@ -176,16 +176,16 @@
     <table id="165" parent="163" name="USER_INF"/>
     <table id="166" parent="163" name="USER_INF_1"/>
     <column id="167" parent="165" name="ID">
-      <DataType>INTEGER|0s</DataType>
+      <DasType>INTEGER|0s</DasType>
       <NotNull>1</NotNull>
       <Position>1</Position>
     </column>
     <column id="168" parent="165" name="NAME">
-      <DataType>CHARACTER VARYING(100)|0s</DataType>
+      <DasType>CHARACTER VARYING(100)|0s</DasType>
       <Position>2</Position>
     </column>
     <column id="169" parent="165" name="SEX">
-      <DataType>CHARACTER VARYING(2)|0s</DataType>
+      <DasType>CHARACTER VARYING(2)|0s</DasType>
       <Position>3</Position>
     </column>
     <index id="170" parent="165" name="PRIMARY_KEY_1">
@@ -199,15 +199,15 @@
       <Primary>1</Primary>
     </key>
     <column id="172" parent="166" name="ID">
-      <DataType>INTEGER|0s</DataType>
+      <DasType>INTEGER|0s</DasType>
       <Position>1</Position>
     </column>
     <column id="173" parent="166" name="NAME">
-      <DataType>CHARACTER VARYING(100)|0s</DataType>
+      <DasType>CHARACTER VARYING(100)|0s</DasType>
       <Position>2</Position>
     </column>
     <column id="174" parent="166" name="SEX">
-      <DataType>CHARACTER VARYING(2)|0s</DataType>
+      <DasType>CHARACTER VARYING(2)|0s</DasType>
       <Position>3</Position>
     </column>
   </database-model>

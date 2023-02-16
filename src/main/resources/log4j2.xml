@@ -48,9 +48,9 @@
             <!--日志格式：[日期] [线程-固定长度] [logger的名称-固定长度] : 内容换行 -->
             <!--<PatternLayout pattern="[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%-5level] %l %c{36} - %msg%n"/>-->
             <!--日志格式：[日期] [线程-固定长度] [输出日志的类与方法行号]  : 内容换行 -->
-            <!--<PatternLayout pattern="[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%-5level] [%t] %l :  %m%n"/>-->
+            <PatternLayout pattern="[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%-5level] [%t] %l :  %m%n"/>
             <!--日志格式：[日期] [线程-固定长度] [logger的名称-固定长度] [行号-固定长度] : 内容换行 -->
-            <PatternLayout pattern="[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%-5level] [%-30t] [%-110logger][%-4L] :  %m%n"/>
+            <!--<PatternLayout pattern="[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%-5level] [%-30t] [%-110logger][%-4L] :  %m%n"/>-->
             <Policies>
                 <!-- 在系统启动时，出发拆分规则，生产一个新的日志文件 -->
                 <OnStartupTriggeringPolicy/>

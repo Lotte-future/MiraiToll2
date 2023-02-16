@@ -1,6 +1,7 @@
 package github.zimoyin.application.server.ai.pic;
 
-import com.alibaba.fastjson.JSONObject;
+
+import com.alibaba.fastjson2.JSONObject;
 import github.zimoyin.mtool.command.CommandData;
 import github.zimoyin.mtool.uilt.NewThreadPoolUtils;
 import github.zimoyin.mtool.uilt.message.ImageUtils;

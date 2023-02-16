@@ -5,7 +5,6 @@ import github.zimoyin.mtool.annotation.Filter;
 import github.zimoyin.mtool.command.CommandData;
 import github.zimoyin.mtool.command.CommandObj;
 import github.zimoyin.mtool.command.CommandSet;
-import github.zimoyin.mtool.command.filter.impl.LevelFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,6 +16,7 @@ public class CommandFilter {
     private final CommandSet<String, CommandObj> commands = CommandSet.getInstance();
     private Filter annotation;
     private final Logger logger = LoggerFactory.getLogger(CommandFilter.class);
+
 
     public CommandFilter(CommandData data) {
         this.data = data;
@@ -36,18 +36,19 @@ public class CommandFilter {
         boolean result = true;
         Class<? extends AbstractFilter>[] filterCls = annotation.filterCls();
         for (Class<? extends AbstractFilter> cls : filterCls) {
+            if (cls.equals(AbstractFilter.class)) continue;
             try {
                 boolean filter = (boolean) cls.getMethod("filter", CommandData.class).invoke(cls.newInstance(), data);
                 result = result && filter;
-                logger.debug("过滤器:{}  放行: {}",cls,result);
+                logger.debug("局部过滤器:{}  放行: {}", cls, result);
                 if (!result) return false;
             } catch (Exception e) {
-                logger.error("过滤器执行失败",e);
+                logger.error("局部过滤器执行失败", e);
             }
         }
-        //执行默认实现过滤器
-        boolean filter = new LevelFilter().filter(data);
-        result = result && filter;
+
+        //当局部过滤器放行后 执行全局过滤器
+        if (result) result = GlobalFilterInitOrExecute.getInstance().execute(data);
         return result;
     }
 }

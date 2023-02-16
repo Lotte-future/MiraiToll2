@@ -1,7 +1,8 @@
 package github.zimoyin.mtool.config.global;
 
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.annotation.JSONField;
+
+import com.alibaba.fastjson2.JSONObject;
+import com.alibaba.fastjson2.annotation.JSONField;
 import github.zimoyin.mtool.dao.JsonSerializeUtil;
 import lombok.Data;
 import org.slf4j.Logger;
@@ -39,7 +40,6 @@ public class CommandConfig {
         private String commandPrefix;
         //是否需要at
         @JSONField(name = "@")
-        @com.alibaba.fastjson2.annotation.JSONField(name = "@")
         private boolean isAT;
         //命令前缀与主语之间是否需要空格
         private boolean space;

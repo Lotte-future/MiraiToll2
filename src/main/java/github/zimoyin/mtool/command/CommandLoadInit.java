@@ -16,10 +16,14 @@ import java.util.List;
  * 加载所有的命令类，并加以解析
  * 扫描所有类的注解（@Command）并加载
  */
-public class CommandLoad {
+public class CommandLoadInit {
     //    private ArrayList<CommandObj> commands = new ArrayList<CommandObj>();
-    private final Logger logger = LoggerFactory.getLogger(CommandLoad.class);
-    private final CommandSet<String, CommandObj> commandSet = CommandSet.getInstance();
+    private final Logger logger = LoggerFactory.getLogger(CommandLoadInit.class);
+    private CommandSet<String, CommandObj> commandSet;
+
+    public CommandLoadInit(final CommandSet<String, CommandObj> instance) {
+        this.commandSet = instance;
+    }
 
 
     /**
@@ -27,23 +31,21 @@ public class CommandLoad {
      */
     public void init() {
         //遍历类
-//        List<String> clazzName = FindClass.getClazzName(FindClassConfig.path, FindClassConfig.flag);
-        List<String> clazzName = FindClass.getResults();
-        for (String clzName : clazzName) {
+        for (Class<?> clz : FindClass.getResultsToClasses()) {
             try {
-                if (clzName.equalsIgnoreCase("github.zimoyin.tool.mirai.config.BotConfigurationImpl")) continue;
                 //获取是被命令注解修饰的类
-                Class<?> clz = Class.forName(clzName);
                 CommandClass annotation = clz.getAnnotation(CommandClass.class);
                 if (annotation == null) continue;
                 //解析
                 initMethod(clz);
-                logger.debug("[系统日志]加载命令类：{}",clz);
+                logger.debug("[系统日志]加载命令类：{}", clz);
             } catch (Exception e) {
-                logger.error("无法完全解析的类路径:{}", clzName, e);
+                logger.error("无法完全解析的类路径:{}", clz.getName(), e);
             }
         }
+
     }
+
     /**
      * 解析出命令类中的命令方法
      */
@@ -62,10 +64,30 @@ public class CommandLoad {
             //解析
             //命令的名称
             String name = annotation.value();
+            //别名
+            String[] alias = annotation.alias();
             //命令所需的事件
             Class<? extends Event> eventClass = annotation.eventType();
             //命令对象
             CommandObj commandObj = new CommandObj(name, method, eventClass, clz);
+            //别名
+            for (String alia : alias) {
+                if (commandSet.containsKey(alia)) logger.warn(
+                        "重复的命令主语[别名] {}; 重复源 [1] {} [2] {}",
+                        alia,
+                        commandSet.get(alia).getCommandClass().getCanonicalName(),
+                        commandObj.getCommandClass().getCanonicalName()
+                );
+                //放入集合
+                commandSet.put(alia, commandObj);
+            }
+            //命令主语
+            if (commandSet.containsKey(name)) logger.warn(
+                    "重复的命令主语 {}; 重复源 [1] {} [2] {}",
+                    name,
+                    commandSet.get(name).getCommandClass().getCanonicalName(),
+                    commandObj.getCommandClass().getCanonicalName()
+            );
             //放入集合
             commandSet.put(name, commandObj);
         }
@@ -81,9 +103,14 @@ public class CommandLoad {
 
         //如果方法的参数不是信息事件
         Class<?>[] parameterTypes = method.getParameterTypes();
+        //如果方法参数为0
+        if (parameterTypes.length ==0){
+            logger.warn("[系统日志][日志源:CommandLoadInit.isSecurity()]你使用了实验性功能，如果出现异常请停止使用。使用功能:加载无参数的方法为指令方法。方法:{}",method);
+            return;
+        }
         //不是 MessageEvent （被动收到消息）的子类
         if (!MessageEvent.class.isAssignableFrom(parameterTypes[0]) && !CommandData.class.isAssignableFrom(parameterTypes[0])) {
-            logger.warn("警告：命令方法的参数不是 MessageEvent （被动收到消息）的子类 与 CommandData 的子类:{}",method);
+            logger.warn("[系统日志]命令方法的参数不是 MessageEvent （被动收到消息）的子类 与 CommandData 的子类:{}", method);
             return;
         }
         //如果没给 eventType 赋值 就返回true，因为这是事件的最高父类
@@ -91,10 +118,10 @@ public class CommandLoad {
         if (eventType.equals(MessageEvent.class)) return;
         //如果 eventType 的类型是 方法中参数的父类，就发出转型警告
         if (eventType.isAssignableFrom(parameterTypes[0]))
-            logger.warn("注意@Command 描述的事件类型 与 方法参数中事件类型不一致，这将导致从注解的数据类型向下转型到方法的事件类型：{}",method);
+            logger.warn("注意@Command 描述的事件类型 与 方法参数中事件类型不一致，这将导致从注解的数据类型向下转型到方法的事件类型：{}", method);
     }
 
-    public CommandSet<String,CommandObj> getCommandSet() {
+    public CommandSet<String, CommandObj> getCommandSet() {
         return commandSet;
     }
 }

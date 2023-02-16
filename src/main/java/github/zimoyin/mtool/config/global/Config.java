@@ -1,7 +1,7 @@
 package github.zimoyin.mtool.config.global;
 
 
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSONObject;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
@@ -14,14 +14,14 @@ import java.util.ArrayList;
  */
 @Data
 @Slf4j
-public  class Config {
-   public static void init(){
-       try {
-           InitConfig.init();
-       } catch (IOException e) {
-           throw new RuntimeException(e);
-       }
-   }
+public class Config {
+    protected static void init() {
+        try {
+            InitConfig.init();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     private ArrayList<JSONObject> config;
 }

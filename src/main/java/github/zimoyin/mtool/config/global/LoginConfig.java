@@ -1,6 +1,6 @@
 package github.zimoyin.mtool.config.global;
 
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSONObject;
 import github.zimoyin.mtool.dao.JsonSerializeUtil;
 import lombok.Data;
 import org.slf4j.Logger;
@@ -23,7 +23,7 @@ public class LoginConfig{
             try {
                 loginConfig = new LoginConfig();
             } catch (Exception e) {
-                logger.error("无法加载到登录信息文件",e);
+                logger.error("无法加载到登录信息文件,请将里面的注释移除",e);
             }
         }
         return loginConfig;

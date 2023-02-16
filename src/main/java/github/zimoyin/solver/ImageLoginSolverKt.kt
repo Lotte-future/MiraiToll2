@@ -59,32 +59,6 @@ class ImageLoginSolverKt : LoginSolver() {
         return CommunicationChannelOfTicket.getInstance().value
     }
 
-    /**
-     * 处理不安全设备验证. 此函数已弃用, 请实现 [onSolveDeviceVerification].
-     *
-     * 返回值保留给将来使用. 目前在处理完成后返回任意内容 (包含 `null`) 均视为处理成功.
-     *
-     * ## 异常类型
-     *
-     * 抛出一个 [LoginFailedException] 以正常地终止登录, 并可建议系统进行重连或停止 bot (通过 [LoginFailedException.killBot]).
-     * 例如抛出 [RetryLaterException] 可让 bot 重新进行一次登录.
-     *
-     * 抛出任意其他 [Throwable] 将视为验证码解决器的自身错误.
-     *
-     * @return 任意内容. 返回值保留以供未来更新.
-     * @throws LoginFailedException
-     */
-    @Deprecated(
-        "Please use onSolveDeviceVerification instead",
-        replaceWith = ReplaceWith("onSolveDeviceVerification(bot, url, null)"),
-        level = DeprecationLevel.WARNING
-    )
-    override suspend fun onSolveUnsafeDeviceLoginVerify(bot: Bot, url: String): String? {
-        logger.info("onSolveUnsafeDeviceLoginVerify(处理不安全设备验证) url: $url")
-        TypeSelect.open()
-        CommunicationChannelOfURL.getInstance().value = url
-        return CommunicationChannelOfTicket.getInstance().value
-    }
 
     /**
      * 为 `true` 表示支持滑动验证码, 遇到滑动验证码时 mirai 会请求 [onSolveSliderCaptcha].
@@ -113,6 +87,7 @@ class ImageLoginSolverKt : LoginSolver() {
         bot: Bot,
         requests: DeviceVerificationRequests,
     ): DeviceVerificationResult {
+        logger.info("短信登录逻辑被调用")
         TypeSelect.open()
         var solved:DeviceVerificationResult?
 

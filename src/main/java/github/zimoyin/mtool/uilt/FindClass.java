@@ -7,9 +7,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.JarURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
+import java.util.*;
+import java.util.function.Predicate;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.stream.Collectors;
@@ -19,39 +18,62 @@ import java.util.stream.Collectors;
  */
 public class FindClass {
     //默认扫描位置
-    private static final String PackagePath = "github.zimoyin";
+//    private static final String PackagePath = "github.zimoyin";
+    private static final String PackagePath = "";
 
     private static final String CLASS_SUFFIX = ".class";
     private static final String CLASS_FILE_PREFIX = File.separator + "classes" + File.separator;
     private static final String PACKAGE_SEPARATOR = ".";
-    private static Logger logger = LoggerFactory.getLogger(FindClass.class);
-    private static List<String> results = new ArrayList<String>();
+    private static final Logger logger = LoggerFactory.getLogger(FindClass.class);
 
+    private static List<String> results;
+    private static List<? extends Class<?>> resultsClasses;
+
+    /**
+     * 返回扫描的默认位置的结果集
+     */
     public static List<String> getResults() {
-        if (results.size() == 0) {
+        if (results  == null) {
+            results = new ArrayList<String>();
             results = getClazzName(PackagePath, true);
-            results = results.stream().filter(FindClass::isNotBlacklisted).collect(Collectors.toList());
+            results = results.stream().filter(Objects::nonNull).filter(FindClass::isBlacklist).collect(Collectors.toList());
         }
         return results;
     }
 
     /**
-     * 黑名单
-     *
-     * @return
+     * 返回扫描的默认位置的结果集
      */
-    private static List<String> getBlacklist() {
-        List<String> list = new ArrayList<String>();
-        list.add("github.zimoyin.tool.mirai.config.BotConfigurationImpl");
-        list.add("github.zimoyin.core");
-        return list;
+    public static List<? extends Class<?>> getResultsToClasses() {
+        if (resultsClasses == null) {
+            resultsClasses = getResults().stream()
+                    .map(FindClass::toClass)
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+        }
+        return resultsClasses;
     }
 
-    private static boolean isNotBlacklisted(String name) {
-        for (String cls : getBlacklist()) {
-            if (name.indexOf(cls) == 0) return false;
+    /**
+     * 将类路径转为类实例
+     */
+    private static Class<?> toClass(String cls) {
+        try {
+            return Class.forName(cls);
+        } catch (ClassNotFoundException e) {
+            logger.warn("无法将此类路径加载成 Class 实例: {}",cls,e);
         }
-        return true;
+        return null;
+    }
+
+    /**
+     * 初始化加载类的黑名单
+     */
+    private static boolean isBlacklist(String s) {
+        HashSet<String> blacklist = new HashSet<String>();
+        blacklist.add("github.zimoyin.tool.mirai.config.BotConfigurationImpl");
+        blacklist.add("github.zimoyin.core");
+        return !blacklist.contains(s);
     }
 
     /**
@@ -85,7 +107,7 @@ public class FindClass {
                         String path = url.getPath();//类路径
                         result.addAll(getAllClassNameByFile(new File(path), showChildPackageFlag));
 
-                        logger.debug("查找 " + packageName + " 下的类: " + getAllClassNameByFile(new File(path), showChildPackageFlag));
+                        logger.debug("查找 " + packageName + " 下的类: " + getAllClassNameByFile(new File(path), showChildPackageFlag).size());
                     } else if ("jar".equals(protocol)) {
                         JarFile jarFile = null;
                         try {
@@ -96,7 +118,7 @@ public class FindClass {
                         if (jarFile != null) {
                             result.addAll(getAllClassNameByJar(jarFile, packageName, showChildPackageFlag));
 
-                            logger.debug("查找 " + packageName + " 下(jar中)的类: " + getAllClassNameByJar(jarFile, packageName, showChildPackageFlag));
+                            logger.debug("查找 " + packageName + " 下(jar中)的类: " + getAllClassNameByJar(jarFile, packageName, showChildPackageFlag).size());
                         }
                     }
                 }

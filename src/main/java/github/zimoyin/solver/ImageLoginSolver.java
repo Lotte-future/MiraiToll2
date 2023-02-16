@@ -18,6 +18,7 @@ import org.jetbrains.annotations.Nullable;
 @Slf4j
 @Data
 public class ImageLoginSolver extends LoginSolver {
+
     /**
      * 处理图片验证码, 返回图片验证码内容.
      * <p>

@@ -1,5 +1,7 @@
 package github.zimoyin.solver.gui;
 
+import github.zimoyin.mtool.control.EventTask;
+import github.zimoyin.mtool.control.ListeningRegistration;
 import github.zimoyin.solver.communication.CommunicationChannelOfTest;
 import github.zimoyin.solver.communication.CommunicationChannelOfTicket;
 import github.zimoyin.solver.communication.CommunicationChannelOfURL;
@@ -13,18 +15,33 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import net.mamoe.mirai.Bot;
+import net.mamoe.mirai.event.events.BotOnlineEvent;
+import net.mamoe.mirai.event.events.MessageEvent;
 import netscape.javascript.JSObject;
 
 @Slf4j
 public class LoginSolverGui extends Application {
     private volatile WebEngine webEngine;
     private volatile boolean isRunning = true;
-    private volatile String Ticket;
+    private volatile String Ticket = "";
+    private volatile Stage primaryStage;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        this.primaryStage=primaryStage;
+        //监听成功登录后，关闭窗口
+        ListeningRegistration.newTempListener(BotOnlineEvent.class, event -> {
+            log.info("登录成功，窗口即将被关闭");
+            try {
+                stop();
+            } catch (Exception e) {
+                log.warn("关闭窗口时出现了异常",e);
+            }
+            return true;
+        });
         //浏览器
         WebView browser = new WebView();
         webEngine = browser.getEngine();
@@ -41,7 +58,7 @@ public class LoginSolverGui extends Application {
 
         //布局
         FlowPane flowPane = new FlowPane();
-        flowPane.getChildren().addAll(browser, button,textField,button2);
+        flowPane.getChildren().addAll(browser, button, textField, button2);
         primaryStage.setScene(new Scene(flowPane));
 
         primaryStage.setTitle("内置登录验证浏览器");
@@ -55,7 +72,7 @@ public class LoginSolverGui extends Application {
         //获取Ticket
         button.setOnAction(event -> {
             getTicket();
-            if (CommunicationChannelOfTicket.getInstance().size() <=0) {
+            if (CommunicationChannelOfTicket.getInstance().size() <= 0) {
                 log.info("无法获取到 Ticket，程序将会取消阻塞代码并允许");
                 CommunicationChannelOfTicket.getInstance().setValue("未能检测到Ticket，自动判断为允许运行阻塞代码");
             }
@@ -69,11 +86,12 @@ public class LoginSolverGui extends Application {
                 if (start >= end) {
 //                    log.debug("timer getTicket => start time: {},end time: {}", start, end);
                     getTicket();
+                    //每 1.5s 执行一次 getTicket
                     end = start + 1500;
                 }
                 if (!isRunning) break;
             }
-            log.debug("Thread {} end",Thread.currentThread().getName());
+            log.info("Thread {} end", Thread.currentThread().getName());
         }).start();
 
         //更新URL
@@ -82,11 +100,11 @@ public class LoginSolverGui extends Application {
             while (true) {
                 if (!isRunning) break;
                 String url = CommunicationChannelOfURL.getInstance().getValue();
-                log.info("GetValue URL: {}",url);
+                log.info("GetValue URL: {}", url);
                 if (url == null) continue;
                 loadURL(url);
             }
-            log.debug("Thread {} end",Thread.currentThread().getName());
+            log.info("Thread {} end", Thread.currentThread().getName());
         }).start();
     }
 
@@ -95,6 +113,12 @@ public class LoginSolverGui extends Application {
         CommunicationChannelOfURL.getInstance().setValue("end");
         isRunning = false;
         super.stop();
+        Platform.runLater(() -> {
+            if (primaryStage != null){
+                primaryStage.close();
+            }
+        });
+        log.info("窗体被关闭");
     }
 
     private void getTicket() {
@@ -103,9 +127,10 @@ public class LoginSolverGui extends Application {
                 JSObject window = (JSObject) webEngine.executeScript("capGetTicket()");
                 String ticket = (String) window.getMember("ticket");
                 if (ticket.length() > 0) {
-                    CommunicationChannelOfTicket.getInstance().setValue(ticket);
-                    if (!Ticket.equals(ticket))log.info("JS:capGetTicket() Ticket: " + ticket);
+                    if (Ticket.equals(ticket)) return;
+                    log.info("JS:capGetTicket() Ticket: " + ticket);
                     Ticket = ticket;
+                    CommunicationChannelOfTicket.getInstance().setValue(Ticket);
                 }
             } catch (Exception e) {
                 if (Bot.getInstances().size() <= 0) isRunning = false;
@@ -116,7 +141,7 @@ public class LoginSolverGui extends Application {
 
     private void loadURL(String url) {
         Platform.runLater(() -> {
-            log.info("Loading URL: {}",url);
+            log.info("Loading URL: {}", url);
             webEngine.load(url);
         });
     }

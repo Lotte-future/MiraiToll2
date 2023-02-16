@@ -1,17 +1,22 @@
 package github.zimoyin.mtool.run;
 
-import github.zimoyin.mtool.command.CommandLoad;
+import github.zimoyin.mtool.command.CommandLoadInit;
 import github.zimoyin.mtool.command.CommandSet;
+import github.zimoyin.mtool.command.filter.FilterTable;
+import github.zimoyin.mtool.command.filter.GlobalFilterInitOrExecute;
+import github.zimoyin.mtool.config.global.LevelConfig;
 import github.zimoyin.mtool.config.global.LoginConfig;
 import github.zimoyin.mtool.control.Controller;
 import github.zimoyin.mtool.login.Login;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.function.Consumer;
+
 /**
  * 启动类
  */
 @Slf4j
-public class RunMain extends LoginMirai{
+public class RunMain extends LoginMirai {
     /**
      * 启动框架
      */
@@ -22,16 +27,18 @@ public class RunMain extends LoginMirai{
     /**
      * 启动框架
      */
-    public static void init(){
+    public static void initAll() {
         initLogin();
         initController();
         initCommand();
+        GlobalFilterInit();
+        initLevel();
     }
 
     /**
      * 登录信息初始化
      */
-    public static void initLogin(){
+    public static void initLogin() {
         //登录配置信息单例创建，并初始化
         LoginConfig.getInstance();
     }
@@ -39,7 +46,7 @@ public class RunMain extends LoginMirai{
     /**
      * 控制器初始化
      */
-   public static void initController(){
+    public static void initController() {
         //控制器初始化
         Controller.init();
     }
@@ -47,25 +54,52 @@ public class RunMain extends LoginMirai{
     /**
      * 命令初始化
      */
-    public static void initCommand(){
+    public static void initCommand() {
         //命令集合单例创建，并初始化
         CommandSet.getInstance();
-        //初始化命令，将命令监听进命令集合中
-        new CommandLoad().init();
     }
+
+    /**
+     * 权限初始化
+     */
+    public static void initLevel() {
+        LevelConfig.LevelConfigInfo info = LevelConfig.getInstance().getCommandConfigInfo();
+        FilterTable filterTable = FilterTable.getInstance();
+        if (info.getSystems() != null) filterTable.getSystem().addAll(info.getSystems());
+        if (info.getSystems() != null) for (LevelConfig.LevelConfigItem item : info.getLevels()) {
+            Long groupid = item.getGroupid();
+            if (item.getRoots() != null) for (Long id : item.getRoots()) {
+                filterTable.setRoot(groupid, id);
+            }
+            if (item.getFirsts() != null) for (Long id : item.getFirsts()) {
+                filterTable.setFirst(groupid, id);
+            }
+            if (item.getSeconds() != null) for (Long id : item.getSeconds()) {
+                filterTable.setSecond(groupid, id);
+            }
+        }
+    }
+
+    /**
+     * 全局过滤器初始化
+     */
+    public static void GlobalFilterInit() {
+        GlobalFilterInitOrExecute.getInstance();
+    }
+
 
     public static void run() {
         //初始化框架
-        init();
+        initAll();
         //登录
         LoginMirai.login();
     }
 
-    public static void run(long id,String password) {
+    public static void run(long id, String password) {
         //初始化框架
-        init();
+        initAll();
         //登录
-        Login.login(id,password);
+        Login.login(id, password);
     }
 
 }

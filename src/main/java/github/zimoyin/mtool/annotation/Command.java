@@ -1,5 +1,6 @@
 package github.zimoyin.mtool.annotation;
 
+import github.zimoyin.mtool.command.filter.AbstractFilter;
 import net.mamoe.mirai.event.events.MessageEvent;
 
 import java.lang.annotation.*;
@@ -23,4 +24,5 @@ public @interface Command {
     //help  如果不想被扫描到命令，请不要动他们
     String help() default "";
     String description() default "";
+    String[] alias() default {};//命令的别名
 }

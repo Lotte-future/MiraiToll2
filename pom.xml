@@ -14,14 +14,23 @@
     </properties>
 
     <dependencies>
+
+        <!--<dependency>-->
+        <!--    <groupId>io.vertx</groupId>-->
+        <!--    <artifactId>vertx-core</artifactId>-->
+        <!--    <version>4.3.2</version>-->
+        <!--</dependency>-->
+
         <!--  mirai  -->
         <dependency>
             <groupId>net.mamoe</groupId>
             <artifactId>mirai-core-jvm</artifactId>
             <!--<version>2.13.0</version>-->
-            <version>2.13.0-RC2</version>
+            <!--<version>2.13.0-RC2</version>-->
+            <!--<version>2.13.2</version>-->
+            <!--<version>2.13.3</version>-->
+            <version>2.14.0</version>
         </dependency>
-
 
 
         <!-- https://mvnrepository.com/artifact/org.openjfx/javafx-controls -->
@@ -45,8 +54,6 @@
             <version>2.1.214</version>
             <!--<scope>test</scope>-->
         </dependency>
-
-
 
 
         <!--日志-->
@@ -77,12 +84,17 @@
 
 
         <!-- https://mvnrepository.com/artifact/com.alibaba/fastjson -->
+        <!--<dependency>-->
+        <!--    <groupId>com.alibaba</groupId>-->
+        <!--    <artifactId>fastjson</artifactId>-->
+        <!--    <version>2.0.11</version>-->
+        <!--</dependency>-->
+        <!-- https://mvnrepository.com/artifact/com.alibaba.fastjson2/fastjson2 -->
         <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>fastjson</artifactId>
-            <version>2.0.11</version>
+            <groupId>com.alibaba.fastjson2</groupId>
+            <artifactId>fastjson2</artifactId>
+            <version>2.0.23</version>
         </dependency>
-
 
 
         <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
@@ -108,116 +120,27 @@
 
         <!--服务JAR-->
         <!-- 导入本地 lib 目录下的jar： b站API -->
+        <!--<dependency>-->
+        <!--    <groupId>io.zimoyin.github</groupId>-->
+        <!--    <artifactId>BiliAPI</artifactId>-->
+        <!--    <version>1.0.0</version>-->
+        <!--    <scope>system</scope>-->
+        <!--    <systemPath>${project.basedir}/lib/BiliCore.jar</systemPath>-->
+        <!--</dependency>-->
+
         <dependency>
-            <groupId>io.zimoyin.github</groupId>
-            <artifactId>BiliAPI</artifactId>
-            <version>1.0.0</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/BiliCore.jar</systemPath>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-stdlib</artifactId>
+            <version>1.7.20</version>
         </dependency>
-        <!-- 词云 -->
-        <dependency>
-            <groupId>com.kennycason</groupId>
-            <artifactId>kumo-core</artifactId>
-            <version>1.13</version>
-            <exclusions>
-                <!--排除slf4j-log4j12-->
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-log4j12</artifactId>
-                </exclusion>
 
-                <exclusion>
-                    <groupId>org.apache.logging.log4j</groupId>
-                    <artifactId>log4j-core</artifactId>
-                </exclusion>
 
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-api</artifactId>
-                </exclusion>
 
-                <exclusion>
-                    <groupId>org.apache.logging.log4j</groupId>
-                    <artifactId>log4j-slf4j-impl</artifactId>
-                </exclusion>
-
-                <exclusion>
-                    <groupId>org.apache.logging.log4j</groupId>
-                    <artifactId>log4j-api</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>com.kennycason</groupId>
-            <artifactId>kumo-tokenizers</artifactId>
-            <version>1.12</version>
-            <exclusions>
-                <!--排除slf4j-log4j12-->
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-log4j12</artifactId>
-                </exclusion>
-
-                <exclusion>
-                    <groupId>org.apache.logging.log4j</groupId>
-                    <artifactId>log4j-core</artifactId>
-                </exclusion>
-
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-api</artifactId>
-                </exclusion>
-
-                <exclusion>
-                    <groupId>org.apache.logging.log4j</groupId>
-                    <artifactId>log4j-slf4j-impl</artifactId>
-                </exclusion>
-
-                <exclusion>
-                    <groupId>org.apache.logging.log4j</groupId>
-                    <artifactId>log4j-api</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
+        <!--<dependency>-->
+        <!--    <groupId>org.seleniumhq.selenium</groupId>-->
+        <!--    <artifactId>selenium-java</artifactId>-->
+        <!--    &lt;!&ndash;<version>3.4.0</version>&ndash;&gt;-->
+        <!--    <version>4.7.2</version>-->
+        <!--</dependency>-->
     </dependencies>
-
-    <build>
-        <plugins>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <configuration>
-                            <archive>
-                                <manifest>
-                                    <!--  运行jar包时运行的主类，要求类全名  -->
-                                    <mainClass>github.zimoyin.application.Main</mainClass>
-                                    <!-- 是否指定项目classpath下的依赖 -->
-                                    <addClasspath>true</addClasspath>
-                                    <!-- 指定依赖的时候声明前缀 -->
-                                    <classpathPrefix>./lib/</classpathPrefix>
-                                </manifest>
-                            </archive>
-                            <descriptorRefs>
-                                <descriptorRef>jar-with-dependencies</descriptorRef>
-                            </descriptorRefs>
-
-                            <descriptors>
-                                <!-- 使用的描述符，按此描述进行打包，此处配置一个zip.xml表示打zip包 -->
-                                <!--<descriptor>D:\code\MiraiToll2\src\main\resources\assmbly-system.xml</descriptor>-->
-                            </descriptors>
-
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
 </project>
