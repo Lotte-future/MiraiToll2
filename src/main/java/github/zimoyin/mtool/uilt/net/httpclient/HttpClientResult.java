@@ -8,9 +8,9 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.util.EntityUtils;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Serializable;
+import java.io.*;
+import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Description: 封装httpClient响应结果
@@ -84,6 +84,7 @@ public class HttpClientResult implements Serializable {
 
     /**
      * 获取网络输入流，注意：InputStream.close() 方法无法关闭输入流或者socket，请使用该工具类的release()方法关闭socket等其他资源
+     *
      * @return
      * @throws IOException
      */
@@ -129,7 +130,6 @@ public class HttpClientResult implements Serializable {
     }
 
 
-
     /**
      * Description: 释放资源
      *
@@ -141,5 +141,21 @@ public class HttpClientResult implements Serializable {
         isInputStreamClose = true;
     }
 
+    /**
+     * EventSource 是服务器推送的一个网络事件接口。一个 EventSource 实例会对 HTTP 服务开启一个持久化的连接，以text/event-stream 格式发送事件，会一直保持开启直到被要求关闭。
+     * @link <a href="https://developer.mozilla.org/zh-CN/docs/Web/API/EventSource">文档</a>
+     * @param source
+     */
+    public void eventSource(Consumer<String> source) throws IOException {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(this.getInputStream()))) {
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                source.accept(line);
+            }
+        }finally {
+            release();
+        }
+
+    }
 
 }

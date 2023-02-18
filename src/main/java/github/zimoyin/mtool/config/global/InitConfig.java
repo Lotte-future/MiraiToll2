@@ -46,6 +46,7 @@ public final class InitConfig {
         //将配置文件扔到外面
         InputStream resourceAsStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("config/config.json");//加载配置文件模板注册信息
         Config configs = JSON.parseObject(resourceAsStream, Config.class);//实例化文件模板注册信息
+        if (configs == null) throw new IllegalStateException("[严重] 全局配置注册表无法正常被加载");
         for (JSONObject json : configs.getConfig()) {//遍历所有的注册信息
             json.entrySet().forEach(entry -> {
                 String key = entry.getKey();

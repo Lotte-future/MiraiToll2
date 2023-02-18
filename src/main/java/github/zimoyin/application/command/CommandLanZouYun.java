@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
-@CommandClass
+//@CommandClass
 public class CommandLanZouYun {
     private static final String URL="https://api.vvhan.com/api/lz?url=%s";
     private final Logger logger = LoggerFactory.getLogger(CommandLanZouYun.class);

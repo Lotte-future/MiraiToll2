@@ -12,7 +12,7 @@ import java.io.IOException;
 @Slf4j
 public final class ChatGPTQuota extends ApplicationConfig {
     //总额度，默认为免费额度 50
-    private volatile double TotalAmount = 50;
+    private volatile double TotalAmount = 18;
     //调用一次api的价格
     public static final double Price = 0.002385701754386;
     //调用次数

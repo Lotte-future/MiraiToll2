@@ -8,9 +8,12 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.entity.StringEntity;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.function.Consumer;
 
 @Slf4j
 public class ChatAPI {
@@ -80,6 +83,10 @@ public class ChatAPI {
         copyConfig.setUser(name);
         log.debug("GPT({}) [{}]-> {}", name, uuid, copyConfig.toJson());
         copyConfig.setPrompt(getList(text, name).toString());
+        //参数判断
+        if (copyConfig.isStream()) {
+            throw new IllegalArgumentException("当前API不能接收 Stream 为true的参数");
+        }
         //构建参数体
         StringEntity stringEntity = new StringEntity(copyConfig.toJson().toString(), StandardCharsets.UTF_8);
         stringEntity.setContentType("application/json;charset=utf-8");

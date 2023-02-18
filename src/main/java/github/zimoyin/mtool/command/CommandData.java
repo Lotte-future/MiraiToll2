@@ -9,9 +9,8 @@ import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.contact.Friend;
 import net.mamoe.mirai.contact.Group;
 import net.mamoe.mirai.event.events.MessageEvent;
-import net.mamoe.mirai.message.data.Image;
-import net.mamoe.mirai.message.data.Message;
-import net.mamoe.mirai.message.data.MessageChain;
+import net.mamoe.mirai.message.MessageReceipt;
+import net.mamoe.mirai.message.data.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -133,6 +132,7 @@ public class CommandData {
         init(event.getMessage());
         initGroup();
         initSender();
+        initFriend();
         contact = event.getSubject();
     }
 
@@ -166,9 +166,7 @@ public class CommandData {
 
     private void initFriend() {
         if (event.getSubject() instanceof Friend) {
-            Friend subject = (Friend) event.getSubject();
-            this.friend = subject;
-
+            this.friend = (Friend) event.getSubject();
             this.windowName = this.friend.getNick();
             this.windowID = this.friend.getId();
         }
@@ -202,44 +200,40 @@ public class CommandData {
         return getBot().getId();
     }
 
-    public void sendMessage(String message) {
-//        if (!setSendCount(contact.getId())) {
-//            log.warn("对 {} 的发言频率高于阈值({}c/{}s)，以禁止发言 {}",contact.getId(),count,sendTime,message);
-//            return;
-//        }
-        contact.sendMessage(message);
+    public MessageReceipt<Contact> sendMessage(String message) {
+        return contact.sendMessage(message);
     }
 
-    public void sendMessage(String message, Object... params) {
-//        if (!setSendCount(contact.getId())) {
-//            log.warn("对 {} 的发言频率高于阈值({}c/{}s)，以禁止发言 {}",contact.getId(),count,sendTime,message);
-//            return;
-//        }
-        contact.sendMessage(String.format(message, params));
+    public MessageReceipt<Contact> sendMessage(String message, Object... params) {
+        return contact.sendMessage(String.format(message, params));
     }
 
-    public void sendMessage(MessageChain chain) {
-//        if (!setSendCount(contact.getId())) {
-//            log.warn("对 {} 的发言频率高于阈值({}c/{}s)，以禁止发言 {}",contact.getId(),count,sendTime,chain);
-//            return;
-//        }
-        contact.sendMessage(chain);
+    public MessageReceipt<Contact> sendMessage(MessageChain chain) {
+        return contact.sendMessage(chain);
     }
 
-    public void sendMessage(Number number) {
-//        if (!setSendCount(contact.getId())) {
-//            log.warn("对 {} 的发言频率高于阈值({}c/{}s)，以禁止发言 {}",contact.getId(),count,sendTime,number);
-//            return;
-//        }
-        contact.sendMessage(String.valueOf(number));
+    public MessageReceipt<Contact> sendMessage(Number number) {
+        return contact.sendMessage(String.valueOf(number));
     }
 
-    public void sendMessage(Message message) {
-//        if (!setSendCount(contact.getId())) {
-//            log.warn("对 {} 的发言频率高于阈值({}c/{}s)，以禁止发言 {}",contact.getId(),count,sendTime,message);
-//            return;
-//        }
-        contact.sendMessage(message);
+    public MessageReceipt<Contact> sendMessage(Message message) {
+        return contact.sendMessage(message);
+    }
+
+    public MessageReceipt<Contact> sendQuoteMessage(MessageChain msg){
+        MessageChain chain = new MessageChainBuilder() // 引用收到的消息并回复 "Hi!", 也可以添加图片等更多元素.
+                .append(new QuoteReply(event.getMessage()))
+                .append(msg)
+                .build();
+        return sendMessage(chain);
+    }
+
+    public MessageReceipt<Contact> sendQuoteMessage(String msg){
+        MessageChain chain = new MessageChainBuilder() // 引用收到的消息并回复 "Hi!", 也可以添加图片等更多元素.
+                .append(new QuoteReply(event.getMessage()))
+                .append(msg)
+                .build();
+        return sendMessage(chain);
     }
 
     public String getParam() {
@@ -249,19 +243,4 @@ public class CommandData {
         }
         return builder.toString();
     }
-
-    @Deprecated
-    private boolean setSendCount(long id) {
-        long thisTime = System.currentTimeMillis();
-        //刷新发言时间
-        if (thisTime >= Time + sendTime) {
-            sendCount.clear();
-            Time = System.currentTimeMillis();
-        }
-        //更新发言频率
-        sendCount.put(id, sendCount.get(id) == null ? 0 : sendCount.get(id));
-        //统计发言频率是否大于阈值
-        return sendCount.get(id) <= count;
-    }
-
 }

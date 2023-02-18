@@ -5,7 +5,7 @@ import github.zimoyin.mtool.annotation.CommandClass;
 import github.zimoyin.mtool.config.global.CommandConfig;
 import net.mamoe.mirai.event.events.MessageEvent;
 
-@CommandClass
+//@CommandClass
 public class CommandHelp {
 
 

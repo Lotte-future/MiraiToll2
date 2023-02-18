@@ -19,7 +19,7 @@ public class Config {
         try {
             InitConfig.init();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            log.error("[严重] 无法读取全局配置文件注册表",e);
         }
     }
 
