@@ -103,6 +103,7 @@ public class RunMain extends LoginMirai {
         LoginMirai.login(null);
     }
 
+    @Deprecated
     public static void run(long id, String password) {
         //初始化框架
         initAll();

@@ -9,6 +9,8 @@ import github.zimoyin.mtool.config.global.CommandConfig;
 import net.mamoe.mirai.message.data.ForwardMessageBuilder;
 import net.mamoe.mirai.message.data.PlainText;
 
+import java.util.HashSet;
+
 @CommandClass
 public final class CommandHelp {
     private final CommandSet<String, CommandObj> commandSet = CommandSet.getInstance();
@@ -35,8 +37,11 @@ public final class CommandHelp {
         //命令个数大于 10 个就启用转发数据类型
         int count = 0;
         int find = 10;
+        HashSet<CommandObj> valuesSet = new HashSet<CommandObj>();
         for (CommandObj value : commandSet.values()) {
             String description = value.getHelp().getDescription();
+            if (valuesSet.contains(value)) continue;
+            valuesSet.add(value);
             if (description.isEmpty()) continue;//如果不存在描述就跳过这个命令
             buffer.append(config.getCommandConfigInfo().getCommandPrefix()).append(value.getName()).append(":  ").append(description).append("\n");
             count++;
