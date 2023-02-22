@@ -8,6 +8,7 @@ import github.zimoyin.mtool.uilt.net.httpclient.HttpClientResult;
 import github.zimoyin.mtool.uilt.net.httpclient.HttpClientUtils;
 import github.zimoyin.application.command.pojo.music.qq.Music;
 import github.zimoyin.application.command.pojo.music.qq.QQMusicJson;
+import net.mamoe.mirai.event.events.MessageEvent;
 import net.mamoe.mirai.message.data.MusicKind;
 import net.mamoe.mirai.message.data.MusicShare;
 import org.slf4j.Logger;
@@ -21,7 +22,12 @@ public class CommandMusic {
     //QQ音乐解析
     private static final String URL_QQ_1="https://shengapi.cn/api/qqyy.php?song=%s&id=1";
     private static final Logger logger = LoggerFactory.getLogger(CommandMusic.class);
-    @Command(value = "点歌",description = "查找音乐并播放（参数：【歌名】）")
+//    @Command(value = "点歌",description = "查找音乐并播放（参数：【歌名】）")
+    @Command(value = "点歌",description = "查找音乐并播放（参数：【歌名】）",
+            help = "",
+            alias = {"a","b"},
+            eventType= MessageEvent.class
+    )
     public void music(CommandData commandData) throws IOException {
         if (commandData.isEmptyParams()) {
             commandData.sendMessage("命令格式错误: %s点歌 歌名",commandData.getPrefix());

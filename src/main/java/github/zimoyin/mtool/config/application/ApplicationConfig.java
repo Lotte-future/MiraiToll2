@@ -1,5 +1,8 @@
 package github.zimoyin.mtool.config.application;
 
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONArray;
+import github.zimoyin.mtool.uilt.JSONString;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
@@ -16,12 +19,14 @@ import java.util.stream.Collectors;
 
 /**
  * 应用程序配置文件
+ * 注意配置文件中不可出现中文，空格等特殊字符
  */
 @Slf4j
 public abstract class ApplicationConfig extends HashMap<String, Object> {
     private final HashMap<String, Object> config = this;
     public final String RootPath = "./data/config/application/";
     public Charset charset = StandardCharsets.UTF_8;
+    private final  List<Field> Fields = getFields();
 
     public ApplicationConfig(boolean isInit) {
         if (isInit) init();
@@ -63,19 +68,37 @@ public abstract class ApplicationConfig extends HashMap<String, Object> {
         try (FileInputStream inputStream = new FileInputStream(file)) {
             Properties test = new Properties();
             test.load(inputStream);
-            List<Field> fields = getFields();
             for (Object key : test.keySet()) {
-                caseType(key.toString().trim(), test.get(key).toString(), fields);
+                caseType(key.toString().trim(), test.get(key).toString(), Fields);
             }
         }
+    }
+
+    @Override
+    public Object put(String key, Object value) {
+        String valArray = instanceofStringArray(value);
+        if (valArray != null) value = valArray;
+        caseType(key.trim(),value.toString().trim(),Fields);
+        return value;
+    }
+
+    /**
+     * 将数组转为 JSON 数组格式
+     */
+    private String instanceofStringArray(Object value){
+        if (value instanceof Object[]){
+//            Object[] array = (Object[]) value;
+            return JSONArray.of(value).toString();
+        }
+        return null;
     }
 
     /**
      * 将键值对放入hashmap集合，并为相应字段赋值
      *
-     * @param key
-     * @param value
-     * @param fields
+     * @param key 键
+     * @param value 值
+     * @param fields 字段列表
      */
     private void caseType(String key, String value, List<Field> fields) {
         Field field = findField(key, fields);
@@ -101,18 +124,29 @@ public abstract class ApplicationConfig extends HashMap<String, Object> {
         }
     }
 
+    /**
+     * 查找字段
+     * @param name 字段名称
+     * @param fields 字段列表，请通过 getFields 获取
+     */
     public Field findField(String name, List<Field> fields) {
         return fields.stream().filter(field -> field.getName().equals(name)).findFirst().orElse(null);
     }
 
+    /**
+     * 创建配置文件
+     */
     private void newFile() throws IOException {
         initField();
         save();
     }
 
+    /**
+     * 为当前类中所有字段赋值
+     * @param obj 当前类的实例对象
+     */
     public void setFieldValue(Object obj) {
-        List<Field> fields = getFields();
-        for (Field field : fields) {
+        for (Field field : Fields) {
             field.setAccessible(true);
             boolean isFinal = Modifier.isFinal(field.getModifiers());
             try {
@@ -134,7 +168,7 @@ public abstract class ApplicationConfig extends HashMap<String, Object> {
         } catch (NoSuchMethodException e) {
             log.warn("{} 类没有参数类型为 'boolean' 的构造方法，这将导致系统无法获取到该类的字段值以至于数据产生误差", thisClass.getCanonicalName());
         }
-        for (Field field : getFields()) {
+        for (Field field : Fields) {
             Object value = null;
             field.setAccessible(true);
             try {
@@ -149,6 +183,9 @@ public abstract class ApplicationConfig extends HashMap<String, Object> {
         }
     }
 
+    /**
+     * 获取当前类中字段列表
+     */
     public List<Field> getFields() {
         Class<? extends ApplicationConfig> thisClass = getClass();
         List<Field> fields = new ArrayList<Field>();
@@ -163,10 +200,83 @@ public abstract class ApplicationConfig extends HashMap<String, Object> {
             if (field.getName().equalsIgnoreCase("charset")) remFields.add(field);
             if (field.getName().equalsIgnoreCase("config")) remFields.add(field);
             if (field.getName().equalsIgnoreCase("log")) remFields.add(field);
+            if (field.getName().equalsIgnoreCase("logger")) remFields.add(field);
+            if (field.getName().equalsIgnoreCase("Fields")) remFields.add(field);
         }
         for (Field field : remFields) {
             fields.remove(field);
         }
         return fields;
+    }
+
+    public Object get(String key) {
+        return super.get(key);
+    }
+
+    public String getString(String key) {
+        return super.get(key).toString();
+    }
+
+    public int getInt(String key) {
+        return Integer.parseInt(getString(key));
+    }
+
+    public long getLong(String key) {
+        return Long.parseLong(getString(key));
+    }
+
+    public float getFloat(String key) {
+        return Float.parseFloat(getString(key));
+    }
+
+    public double getDouble(String key) {
+        return Double.parseDouble(getString(key));
+    }
+
+    public byte getByte(String key) {
+        return Byte.parseByte(getString(key));
+    }
+
+    public short getShort(String key) {
+        return Short.parseShort(getString(key));
+    }
+
+    /**
+     * 返回该键值对对应的数组
+     */
+    public Object[] getArray(String key) {
+        String string = getString(key);
+        if (string == null) return null;
+        return JSON.parseArray(key).toArray();
+    }
+
+    /**
+     * 返回该键值对对应的数组
+     */
+    public String[] getArrayString(String key) {
+        String string = getString(key);
+        if (string == null) return null;
+        List<String> strings;
+        try {
+            strings = JSON.parseArray(key).toList(String.class);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("配置文件中的数组不是一个正确的JSON数组", e);
+        }
+        return strings.toArray(new String[0]);
+    }
+
+    /**
+     * 返回该键值对对应的数组
+     */
+    public String[] getArrayString2(String key) {
+        String string = getString(key);
+        if (string == null) return null;
+        List<String> strings;
+        try {
+            strings = JSON.parseArray(JSONString.wrapElementsInQuotes2(string)).toList(String.class);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("配置文件中的数组不是一个正确的JSON数组", e);
+        }
+        return strings.toArray(new String[0]);
     }
 }

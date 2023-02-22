@@ -22,6 +22,10 @@ public class Login {
     }
 
     public static void login(long id, String password, BotConfiguration configuration){
+        if (configuration == null) {
+            login(id, password);
+            return;
+        }
         //创建机器人
         Bot bot = BotFactory.INSTANCE.newBot(id, password,configuration);
         //登录bot

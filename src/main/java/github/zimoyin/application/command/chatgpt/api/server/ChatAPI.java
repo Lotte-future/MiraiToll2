@@ -68,8 +68,8 @@ public class ChatAPI {
     public boolean preChat(String name) {
         ArrayList<String> list = caches.get(name);
         if (list == null) return true;
-        if (list.size() >= 10) return false;
-        return cachesCount.get(name) < 20;
+        if (list.size() >= 3) list.clear();
+        return cachesCount.get(name) < 30;
     }
 
     public String chat(String text, String name) throws IOException {

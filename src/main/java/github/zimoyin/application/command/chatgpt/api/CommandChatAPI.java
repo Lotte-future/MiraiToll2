@@ -3,9 +3,6 @@ package github.zimoyin.application.command.chatgpt.api;
 import com.alibaba.fastjson2.JSONObject;
 import github.zimoyin.application.command.chatgpt.api.cofig.ChatGPTQuota;
 import github.zimoyin.application.command.chatgpt.api.server.ChatAPI;
-import github.zimoyin.application.dao.chat.Thesaurus;
-import github.zimoyin.application.dao.chat.ThesaurusDao;
-import github.zimoyin.application.uilts.MybatisUtils;
 import github.zimoyin.mtool.annotation.Command;
 import github.zimoyin.mtool.annotation.CommandClass;
 import github.zimoyin.mtool.annotation.Filter;
@@ -14,7 +11,6 @@ import github.zimoyin.mtool.command.filter.impl.Level;
 import lombok.extern.slf4j.Slf4j;
 import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.message.MessageReceipt;
-import org.apache.ibatis.session.SqlSession;
 
 import java.io.IOException;
 import java.util.List;
@@ -22,14 +18,6 @@ import java.util.List;
 @Slf4j
 @CommandClass
 public class CommandChatAPI {
-    private SqlSession sqlSession = null;
-    ThesaurusDao mapper = null;
-
-    public CommandChatAPI() {
-        //获取SqlSession 对象
-        sqlSession = MybatisUtils.getSqlSession();
-        mapper = sqlSession.getMapper(ThesaurusDao.class);
-    }
 
     private long start = System.currentTimeMillis();
 
@@ -50,21 +38,22 @@ public class CommandChatAPI {
     public String commandChat(CommandData data) {
         MessageReceipt<Contact> receipt = data.sendMessage("少女思考中...");
         if (System.currentTimeMillis() - start > 24 * 60 * 60 * 1000) {
+            start=System.currentTimeMillis();
             ChatAPI.getInstance().getCachesCount().clear();
             log.info("ChatGPT： 正在重置缓存数值列表");
         }
         String param = data.getParam();
         //随机返回一个数据库里面都词条
-        try {
-            if (param!=null && !param.isEmpty()){
-                List<String> values = mapper.getValues(param.trim());
-                if (values.size() >0){
-                    return values.get((int) (Math.random()*values.size()));
-                }
-            }
-        }catch (Exception e){
-            log.warn("无法访问数据库拿到词条");
-        }
+//        try {
+//            if (param!=null && !param.isEmpty()){
+//                List<String> values = mapper.getValues(param.trim());
+//                if (values.size() >0){
+//                    return values.get((int) (Math.random()*values.size()));
+//                }
+//            }
+//        }catch (Exception e){
+//            log.warn("无法访问数据库拿到词条");
+//        }
         //参数校验
         if (param.isEmpty()) {
             return "参数不合法，请保持参数的长度在 1-300 之间";
@@ -76,11 +65,11 @@ public class CommandChatAPI {
         try {
             String chat = ChatAPI.getInstance().chat(param, data.getWindowID() + "-" + data.getSenderID());
             text = JSONObject.parseObject(chat).getJSONArray("choices").getJSONObject(0).get("text").toString().trim();
-            try {
-                mapper.addThesaurus(new Thesaurus(data.getParam().trim(), text.trim(), "ChatGPT"));
-            } catch (Exception e) {
-                log.warn("记录对话日志失败:\n{}\n\n",text, e);
-            }
+//            try {
+//                mapper.addThesaurus(new Thesaurus(data.getParam().trim(), text.trim(), "ChatGPT"));
+//            } catch (Exception e) {
+//                log.warn("记录对话日志失败:\n{}\n\n",text, e);
+//            }
             return text;
         } catch (IOException e) {
             log.error("与Chat API 交流时产生异常", e);

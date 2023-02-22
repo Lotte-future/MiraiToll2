@@ -59,6 +59,7 @@ public class BotConfigurationImpl extends BotConfiguration {
 
     //初始化
     public void init() throws IOException {
+        initBefore();
         redirectBotLogToFile(new File("./log/mirai/log.log"));
         redirectNetworkLogToFile(new File("./log/mirai/net.log"));
         //重定向日志
@@ -94,5 +95,8 @@ public class BotConfigurationImpl extends BotConfiguration {
         ImageLoginSolver solver = new ImageLoginSolver();//无短信验证
         ImageLoginSolverKt solverKt = new ImageLoginSolverKt();//有短信验证
         setLoginSolver(solverKt);
+        initAfter();
     }
+    public void initAfter(){}
+    public void initBefore(){}
 }

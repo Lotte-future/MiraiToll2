@@ -14,6 +14,7 @@ import net.mamoe.mirai.message.data.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.function.Consumer;
 
 /**
  * 命令数据封装
@@ -220,7 +221,16 @@ public class CommandData {
         return contact.sendMessage(message);
     }
 
-    public MessageReceipt<Contact> sendQuoteMessage(MessageChain msg){
+    /**
+     * 允许通过 函数式接口来构建一个信息并发送
+     */
+    public MessageReceipt<Contact> sendMessage(Consumer<MessageChainBuilder> consumer){
+        MessageChainBuilder messages = new MessageChainBuilder();
+        consumer.accept(messages);
+        return sendMessage(messages.build());
+    }
+
+    public MessageReceipt<Contact> sendQuoteMessage(MessageChain msg) {
         MessageChain chain = new MessageChainBuilder() // 引用收到的消息并回复 "Hi!", 也可以添加图片等更多元素.
                 .append(new QuoteReply(event.getMessage()))
                 .append(msg)
@@ -228,12 +238,18 @@ public class CommandData {
         return sendMessage(chain);
     }
 
-    public MessageReceipt<Contact> sendQuoteMessage(String msg){
+    public MessageReceipt<Contact> sendQuoteMessage(String msg) {
         MessageChain chain = new MessageChainBuilder() // 引用收到的消息并回复 "Hi!", 也可以添加图片等更多元素.
                 .append(new QuoteReply(event.getMessage()))
                 .append(msg)
                 .build();
         return sendMessage(chain);
+    }
+
+    public MessageReceipt<Contact> sendForwardMessage(Consumer<ForwardMessageData> consumer) {
+        ForwardMessageData messageData = new ForwardMessageData(this);
+        consumer.accept(messageData);
+        return sendMessage(messageData.build());
     }
 
     public String getParam() {

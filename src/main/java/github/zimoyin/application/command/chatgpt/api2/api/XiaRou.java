@@ -1,16 +1,12 @@
 package github.zimoyin.application.command.chatgpt.api2.api;
 
 import com.alibaba.fastjson2.JSON;
-import github.zimoyin.application.dao.chat.Thesaurus;
-import github.zimoyin.application.dao.chat.ThesaurusDao;
-import github.zimoyin.application.uilts.MybatisUtils;
 import github.zimoyin.mtool.annotation.Command;
 import github.zimoyin.mtool.annotation.CommandClass;
 import github.zimoyin.mtool.command.CommandData;
 import github.zimoyin.mtool.uilt.net.httpclient.HttpClientResult;
 import github.zimoyin.mtool.uilt.net.httpclient.HttpClientUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.session.SqlSession;
 
 import java.io.IOException;
 
@@ -20,15 +16,6 @@ import java.io.IOException;
 @CommandClass
 @Slf4j
 public class XiaRou {
-    private SqlSession sqlSession = null;
-    ThesaurusDao mapper = null;
-
-    public XiaRou() {
-        //获取SqlSession 对象
-        sqlSession = MybatisUtils.getSqlSession();
-        mapper = sqlSession.getMapper(ThesaurusDao.class);
-    }
-
     /**
      * apitype=sql，将优先索引数据库
      */
@@ -48,11 +35,6 @@ public class XiaRou {
                     e
             );
             return "ChatGPT 服务器无法被访问";
-        }
-        try {
-            mapper.addThesaurus(new Thesaurus(data.getParam().trim(), content.trim(), "ChatGPT"));
-        } catch (Exception e) {
-            log.warn("记录对话日志失败", e);
         }
         return content;
     }

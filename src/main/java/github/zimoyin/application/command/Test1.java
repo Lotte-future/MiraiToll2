@@ -5,10 +5,12 @@ import github.zimoyin.mtool.annotation.CommandClass;
 import github.zimoyin.mtool.annotation.Filter;
 import github.zimoyin.mtool.annotation.ThreadSpace;
 import github.zimoyin.mtool.command.CommandData;
+import github.zimoyin.mtool.command.ForwardMessageData;
 import github.zimoyin.mtool.command.filter.FilterTable;
 import github.zimoyin.mtool.command.filter.impl.Level;
 import github.zimoyin.mtool.dao.H2Connection;
 import github.zimoyin.application.command.filter.TestFilter;
+import github.zimoyin.mtool.uilt.message.ImageUtils;
 import lombok.extern.slf4j.Slf4j;
 import net.mamoe.mirai.contact.Friend;
 import net.mamoe.mirai.contact.Group;
@@ -17,9 +19,11 @@ import net.mamoe.mirai.event.events.MessageEvent;
 import net.mamoe.mirai.message.data.*;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.ListIterator;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 @CommandClass
 @ThreadSpace
@@ -59,11 +63,8 @@ public class Test1 {
         }
     }
 
-    @Command("text2")
-    public void text2(CommandData data) {
-        Friend friend = data.getFriend();
-        Group group = data.getGroup();
-        System.out.println(friend);
-        System.out.println(group);
+    @Command("t")
+    public void text2(CommandData data) throws IOException {
+
     }
 }

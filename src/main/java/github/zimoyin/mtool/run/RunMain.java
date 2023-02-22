@@ -9,6 +9,7 @@ import github.zimoyin.mtool.config.global.LoginConfig;
 import github.zimoyin.mtool.control.Controller;
 import github.zimoyin.mtool.login.Login;
 import lombok.extern.slf4j.Slf4j;
+import net.mamoe.mirai.utils.BotConfiguration;
 
 import java.util.function.Consumer;
 
@@ -88,11 +89,18 @@ public class RunMain extends LoginMirai {
     }
 
 
+    public static void run(BotConfiguration configuration) {
+        //初始化框架
+        initAll();
+        //登录
+        LoginMirai.login(configuration);
+    }
+
     public static void run() {
         //初始化框架
         initAll();
         //登录
-        LoginMirai.login();
+        LoginMirai.login(null);
     }
 
     public static void run(long id, String password) {

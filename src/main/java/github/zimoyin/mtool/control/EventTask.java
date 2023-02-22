@@ -58,19 +58,19 @@ public interface EventTask<T extends Event> {
 
 
     /**
-     * 临时监听结束后执行
+     * 临时监听结束后执行的钩子函数
      */
     public default void dead(){
 
     }
 
     /**
-     * 超时死亡时执行
+     * 超时死亡时执行的构子函数
      */
     public default void timeoutDead(){}
 
     /**
-     * 主动关闭时执行
+     * 主动关闭时执行的构子函数
      */
     public default void closeDead(){}
 
