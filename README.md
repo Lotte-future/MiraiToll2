@@ -26,24 +26,7 @@ public void initBefore(){
 RunMain.run(...);
 ```
 ## [2. mtool](src%2Fmain%2Fjava%2Fgithub%2Fzimoyin%2Fmtool) 框架本体
-
-> .
-> ├─annotation														注解包：存放所有的注解类
-> ├─command														 命令解析包：用于解析命令
-> │  ├─filter															 			自带的全局过滤器
-> │  └─impl																		 自带的命令
-> ├─config																配置包：用于解析配置文件
-> │  ├─application														应用配置包
-> │  └─global																 全局配置包	
-> ├─control															 控制器包：用于解析控制器
-> ├─dao																   H2数据库
-> ├─event																自定义事件
-> ├─exception
-> ├─login
-> ├─plug
-> ├─run
-> └─uilt
-
+----
 # 二、应用框架
 
 你可以将框架打包，然后引入到你项目里面。或者在里面像我一样在 Application 包下开发
