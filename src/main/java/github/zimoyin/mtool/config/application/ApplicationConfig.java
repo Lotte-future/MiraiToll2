@@ -103,24 +103,24 @@ public abstract class ApplicationConfig extends HashMap<String, Object> {
     private void caseType(String key, String value, List<Field> fields) {
         Field field = findField(key, fields);
         if (field == null) {
-            this.put(key, value);
+            super.put(key, value);
             return;
         }
         Class<?> type = field.getType();
         if (type.equals(int.class) || type.equals(Integer.class)) {
-            this.put(key, Integer.parseInt(value));
+            super.put(key, Integer.parseInt(value));
         } else if (type.equals(double.class) || type.equals(Double.class)) {
-            this.put(key, Double.parseDouble(value));
+            super.put(key, Double.parseDouble(value));
         } else if (type.equals(boolean.class) || type.equals(Boolean.class)) {
-            this.put(key, Boolean.parseBoolean(value));
+            super.put(key, Boolean.parseBoolean(value));
         } else if (type.equals(short.class) || type.equals(Short.class)) {
-            this.put(key, Short.parseShort(value));
+            super.put(key, Short.parseShort(value));
         } else if (type.equals(byte.class) || type.equals(Byte.class)) {
-            this.put(key, Byte.parseByte(value));
+            super.put(key, Byte.parseByte(value));
         } else if (type.equals(float.class) || type.equals(Float.class)) {
-            this.put(key, Float.parseFloat(value));
+            super.put(key, Float.parseFloat(value));
         } else {
-            this.put(key, value);
+            super.put(key, value);
         }
     }
 

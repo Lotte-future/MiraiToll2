@@ -7,12 +7,12 @@ public interface Thesaurus {
 
     public void addEntries(String key, String value);
 
-    public void removeEntries(String key, String value);
+    public boolean removeEntries(String key, String value);
 
-    public void removeEntries(String key);
+    public ArrayList<String> removeEntries(String key);
 
 
-    public String getEntries(String key);
+    public ArrayList<String> getEntries(String key);
 
     public void addCache(HashMap<String, ArrayList<String>> cache);
 

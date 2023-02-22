@@ -3,6 +3,7 @@ package github.zimoyin.mtool.dao;
 import github.zimoyin.mtool.config.global.H2Config;
 import lombok.extern.slf4j.Slf4j;
 import org.h2.jdbcx.JdbcConnectionPool;
+import org.jetbrains.annotations.NotNull;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -40,8 +41,18 @@ public class H2Connection {
         return pool;
     }
 
-    public Statement getStatement(Connection connection) throws SQLException {
+    public Statement getStatement(@NotNull Connection connection) throws SQLException {
         return new H2ExecuteProxyFactory(connection.createStatement()).getProxyInstance();
+    }
+
+    @Deprecated
+    public Statement getStatement() throws SQLException {
+        return new H2ExecuteProxyFactory(getConnection().createStatement()).getProxyInstance();
+    }
+
+    @Deprecated
+    public Statement getStatement(long id) throws SQLException {
+        return new H2ExecuteProxyFactory(getConnection(id).createStatement()).getProxyInstance();
     }
 
     public Connection getConnection() throws SQLException {

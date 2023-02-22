@@ -216,7 +216,7 @@ H2Connection.getInstance().getConnection(botID)//机器人数据库
 H2Connection.getInstance().getStatement(上面获取的链接)//有日志记录SQL
 H2Connection.getInstance().execute(...)//执行SQL，同样有日志记录sql
 ```
-
+* `ResultMapObject` 将查询结果转为java对象
 ## 7. 自定义事件
 
 * 继承 `github.zimoyin.mtool.event.AbstractPrivateEvent`

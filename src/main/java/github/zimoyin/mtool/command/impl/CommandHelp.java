@@ -51,7 +51,7 @@ public final class CommandHelp {
             }
         }
         buffer.append("==============================").append("\n");
-        buffer.append("20221106");
+        buffer.append("20230222");
         forward.add(123, "帮助" + (count % 10), new PlainText(buffer.toString()));
         if (count < find) data.sendMessage(buffer.toString());
         else data.sendMessage(forward.build());

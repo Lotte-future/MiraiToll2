@@ -8,8 +8,13 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class CreateTable {
+    public CreateTable() {
+        create();
+    }
+
     String[] sqls = new String[]{
-            "userid(id BIGINT primary key,money SMALLINT)"
+            "userid(id BIGINT primary key,money SMALLINT)",
+            "chat(id BIGINT primary key AUTO_INCREMENT,text_key VARCHAR_IGNORECASE,text_value VARCHAR_IGNORECASE)"
     };
 
     public void create(long botID){

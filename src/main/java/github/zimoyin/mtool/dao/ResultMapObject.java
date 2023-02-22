@@ -13,7 +13,12 @@ import java.util.Map;
  * 将查询结果转换为对象
  */
 public class ResultMapObject<T> {
+    /**
+     * 将结果集进行映射
+     * 注意映射对象的字段值一定是小写的并且字段名称与数据库的字段名称一致
+     */
     public List<T> parseObject(ResultSet resultSet, Class<T> cls) throws SQLException {
+        if (resultSet == null || cls == null) throw new IllegalArgumentException("resultSet or cls cannot be null");
         List<T> objectList = new ArrayList<>();
         ResultSetMetaData metaData = resultSet.getMetaData();
         int columnCount = metaData.getColumnCount();
@@ -24,11 +29,12 @@ public class ResultMapObject<T> {
                 rowData.put(metaData.getColumnLabel(i), resultSet.getObject(i));
             }
             String jsonStr = JSONObject.toJSONString(rowData);
-            objectList.add(JSONObject.parseObject(jsonStr, cls));
+            objectList.add(JSONObject.parseObject(jsonStr.toLowerCase(), cls));
         }
         return objectList;
     }
 
+    @Deprecated
     public List<T> parseObject(long botid, String sql, Class<T> cls) throws SQLException {
         H2Connection connectionpool = H2Connection.getInstance();
         try (Connection connection = connectionpool.getConnection(botid); Statement statement = H2Connection.getInstance().getStatement(connection)) {
@@ -37,6 +43,7 @@ public class ResultMapObject<T> {
         }
     }
 
+    @Deprecated
     public List<T> parseObject(String sql, Class<T> cls) throws SQLException {
         H2Connection connectionpool = H2Connection.getInstance();
         try (Connection connection = connectionpool.getConnection(); Statement statement = H2Connection.getInstance().getStatement(connection)) {

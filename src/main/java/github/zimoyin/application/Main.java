@@ -26,7 +26,7 @@ public class Main extends RunMain {
         RunMain.run();
 //        info.getLevels().forEach(System.out::println);
 //        RunMain.initAll();
-//        createTable();
+        createTable();
 //        RunMain.initLevel();
 
 
