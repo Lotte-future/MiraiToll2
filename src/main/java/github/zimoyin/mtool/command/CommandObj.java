@@ -115,7 +115,7 @@ public class CommandObj {
      * @throws IllegalAccessException
      * @throws InstantiationException
      */
-    public void execute(MessageEvent event) throws InvocationTargetException, IllegalAccessException, InstantiationException {
+    public void execute(MessageEvent event,CommandData commandData) throws InvocationTargetException, IllegalAccessException, InstantiationException {
         if (!isExecute) {
             log.debug("{} 命令已经被关闭无法被执行 --- {}", getName(), getMethod());
             return;
@@ -126,7 +126,6 @@ public class CommandObj {
 //        if (parameterTypes[0].isAssignableFrom(event.getClass())) method.invoke(commandObject, event);
 //        else if (parameterTypes[0].isAssignableFrom(CommandData.class)) method.invoke(commandObject, new CommandData(event));
         //上面代码更新为下面代码
-        CommandData commandData = new CommandData(event);
         invoke(
                 //机器人相关
                 event,//事件

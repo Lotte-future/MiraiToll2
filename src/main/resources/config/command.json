@@ -1,6 +1,6 @@
 {
   "name": "command",
-  //命令前缀
+  //命令前缀,可以为null
   "commandPrefix": "命令前缀",
   //是否需要at
   "@": false,

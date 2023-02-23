@@ -136,26 +136,17 @@ public class CommandParsing {
             try {
                 //分割命令和参数
                 String[] s = order.split("\\s+");
-                //如果前缀与主语之间存在空格
-                if (space) {
-                    String[] param = new String[s.length - 1];
-                    for (int i = 1; i < s.length; i++) {
-                        param[i] = s[i];
-                    }
-                    s = param;
-                } else {
-                    //去除命令主语前的前缀和空格   --并小写--
-//                    s[0] = s[0].substring(prefix.length()).trim().toLowerCase();
-                    s[0] = s[0].substring(prefix.length()).trim();
-                    //删除空白字符
-                    ArrayList<String> param = new ArrayList<String>();
-                    for (String s1 : s) {
-                        if (s1 == null || s1.isEmpty()) continue;
-                        param.add(s1);
-                    }
-                    String[] strings = new String[param.size()];
-                    s = param.toArray(strings);
+                //去除命令主语前的前缀和空格
+                s[0] = s[0].substring(prefix.length()).trim();
+                //删除空白字符
+                ArrayList<String> param = new ArrayList<String>();
+                for (String s1 : s) {
+                    if (s1 == null || s1.isEmpty()) continue;
+                    param.add(s1);
                 }
+                String[] strings = new String[param.size()];
+                s = param.toArray(strings);
+                //返回示例: .gpt 你好 帅  => ["gpt", "你好","帅]
                 return s;
             } catch (Exception e) {
                 e.printStackTrace();

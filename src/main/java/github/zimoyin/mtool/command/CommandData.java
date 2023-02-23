@@ -129,15 +129,19 @@ public class CommandData {
     }
 
     public CommandData(MessageEvent event) {
-        this.event = event;
-        init(event.getMessage());
-        initGroup();
-        initSender();
-        initFriend();
-        contact = event.getSubject();
+        try{
+            this.event = event;
+            init(event.getMessage());
+            initGroup();
+            initSender();
+            initFriend();
+            contact = event.getSubject();
+        }catch (Exception e){
+            log.error("无法初始一个 CommandData",e);
+        }
     }
 
-    public void init(MessageChain chain) {
+    private void init(MessageChain chain) {
         this.chain = chain;
         this.textMessage = MessageData.getTextMessage(chain);
         if (!CommandParsing.isCommandSubjectParsing(textMessage)) {
@@ -174,15 +178,16 @@ public class CommandData {
     }
 
 
-    private void initParams() {
-        String[] strings = CommandParsing.commandParsing(textMessage);
+    public void initParams(String... command) {
+        String[] strings = null;
+        if (command == null || command.length == 0) strings = CommandParsing.commandParsing(textMessage);
+        else strings = command;
+        if (strings == null) log.error("命令主语以及参数皆为 null");
         assert strings != null;
         this.prefix = CommandConfig.getInstance().getCommandConfigInfo().getCommandPrefix();
         this.header = strings[0];
         this.params = new String[strings.length - 1];
-        for (int i = 1; i < strings.length; i++) {
-            params[i - 1] = strings[i];
-        }
+        System.arraycopy(strings, 1, params, 0, strings.length - 1);
     }
 
     public boolean isNotEmptyParams() {
@@ -224,7 +229,7 @@ public class CommandData {
     /**
      * 允许通过 函数式接口来构建一个信息并发送
      */
-    public MessageReceipt<Contact> sendMessage(Consumer<MessageChainBuilder> consumer){
+    public MessageReceipt<Contact> sendMessage(Consumer<MessageChainBuilder> consumer) {
         MessageChainBuilder messages = new MessageChainBuilder();
         consumer.accept(messages);
         return sendMessage(messages.build());

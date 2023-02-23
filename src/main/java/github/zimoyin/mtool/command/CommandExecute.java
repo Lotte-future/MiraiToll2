@@ -31,10 +31,10 @@ public class CommandExecute {
         try {
             //执行命令
             if (CommandConfig.getInstance().getCommandConfigInfo().isAT()){
-                if (MessageData.getAt(event) != null) commandObj.execute(event);
+                if (MessageData.getAt(event) != null) commandObj.execute(event,commandData);
                 else logger.warn("405 该命令未能在AT机器人的情况下执行，已经被终止执行此命令：{}", commandData.getHeader());
             }else {
-                commandObj.execute(event);
+                commandObj.execute(event,commandData);
             }
         } catch (Exception e) {
             logger.warn("捕获到命令实例类抛出未处理异常");

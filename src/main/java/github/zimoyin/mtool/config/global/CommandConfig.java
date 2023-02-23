@@ -24,7 +24,7 @@ public class CommandConfig {
             try {
                 config = new CommandConfig();
             } catch (Exception e) {
-                logger.error("无法加载到登录信息文件", e);
+                logger.error("无法加载到命令配置文件", e);
             }
         }
         return config;
