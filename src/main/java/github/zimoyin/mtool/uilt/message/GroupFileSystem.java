@@ -57,6 +57,11 @@ public class GroupFileSystem {
         }
     }
 
+    /**
+     * 根据远程文件构建一个对象，该对象是由文件系统进行管理的
+     * @param path 远程文件路径
+     * @param group 群ID
+     */
     public static GroupFile createGroupFile(String path, Group group) {
         //新建个文件系统，从系统中查找到指定文件
         GroupFileSystem system = new GroupFileSystem(group);

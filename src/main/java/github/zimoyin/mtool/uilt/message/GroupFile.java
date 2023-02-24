@@ -271,6 +271,9 @@ public class GroupFile {
         else return thisFolder.renameTo(name);
     }
 
+    /**
+     * 删除文件
+     */
     public boolean delete() {
         if (this.isFile) return thisFile.delete();
         else return thisFolder.delete();

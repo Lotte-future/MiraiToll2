@@ -2,6 +2,7 @@ package github.zimoyin.mtool.event;
 
 import net.mamoe.mirai.Bot;
 import net.mamoe.mirai.event.AbstractEvent;
+import net.mamoe.mirai.event.EventKt;
 
 /**
  * 自定义事件
@@ -19,5 +20,9 @@ public abstract class AbstractPrivateEvent extends AbstractEvent {
 
     public void setBot(Bot bot) {
         this.bot = bot;
+    }
+
+    public void broadcast(){
+        EventKt.broadcast(this);
     }
 }

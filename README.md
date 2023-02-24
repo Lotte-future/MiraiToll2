@@ -222,6 +222,10 @@ H2Connection.getInstance().execute(...)//执行SQL，同样有日志记录sql
 * 继承 `github.zimoyin.mtool.event.AbstractPrivateEvent`
 * 广播事件 `EventKt.broadcast(event)`
 
+* 框架拓展的事件
+> [AtMessageEvent.java](src%2Fmain%2Fjava%2Fgithub%2Fzimoyin%2Fmtool%2Fevent%2FAtMessageEvent.java)
+> [FileMessageEvent.java](src%2Fmain%2Fjava%2Fgithub%2Fzimoyin%2Fmtool%2Fevent%2FFileMessageEvent.java)
+> [HistoricalMessageEvent.java](src%2Fmain%2Fjava%2Fgithub%2Fzimoyin%2Fmtool%2Fevent%2FHistoricalMessageEvent.java)
 ## 8. 临时监听
 
 临时监听通常用于接收用户上传的图片或者文件等

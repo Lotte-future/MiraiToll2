@@ -1,12 +1,15 @@
 package github.zimoyin.mtool.event;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.ToString;
 import net.mamoe.mirai.contact.AvatarSpec;
 import net.mamoe.mirai.contact.UserOrBot;
 import net.mamoe.mirai.event.events.MessageRecallEvent;
 import net.mamoe.mirai.message.data.MessageChain;
 
-@Data
+@Getter
+@ToString
 public class HistoricalMessageEvent extends AbstractPrivateEvent {
     /**
      * 信息 为 null 则是无法获取到事件

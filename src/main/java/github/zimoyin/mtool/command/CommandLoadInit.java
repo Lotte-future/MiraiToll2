@@ -105,7 +105,7 @@ public class CommandLoadInit {
         Class<?>[] parameterTypes = method.getParameterTypes();
         //如果方法参数为0
         if (parameterTypes.length ==0){
-            logger.warn("[系统日志][日志源:CommandLoadInit.isSecurity()]你使用了实验性功能，如果出现异常请停止使用。使用功能:加载无参数的方法为指令方法。方法:{}",method);
+//            logger.warn("[系统日志][日志源:CommandLoadInit.isSecurity()]你使用了实验性功能，如果出现异常请停止使用。使用功能:加载无参数的方法为指令方法。方法:{}",method);
             return;
         }
         //不是 MessageEvent （被动收到消息）的子类
