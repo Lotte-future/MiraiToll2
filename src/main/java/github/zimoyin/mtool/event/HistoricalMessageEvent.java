@@ -35,12 +35,12 @@ public class HistoricalMessageEvent extends AbstractPrivateEvent {
                                   net.mamoe.mirai.event.events.MessageRecallEvent messageRecallEvent,
                                   String logstr,
                                   Author author) {
+        super(messageRecallEvent.getBot());
         Chain = chain;
         Time = time;
         MessageRecallEvent = messageRecallEvent;
         Logstr = logstr;
         this.author = author;
-        setBot(messageRecallEvent.getBot());
     }
 
     @Data

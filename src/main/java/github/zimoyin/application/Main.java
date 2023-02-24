@@ -11,6 +11,8 @@ import github.zimoyin.application.dao.table.CreateTable;
 import kotlin.jvm.functions.Function1;
 import lombok.extern.slf4j.Slf4j;
 import net.mamoe.mirai.Bot;
+import net.mamoe.mirai.contact.Friend;
+import net.mamoe.mirai.contact.Group;
 import net.mamoe.mirai.event.Event;
 import net.mamoe.mirai.event.EventChannel;
 import net.mamoe.mirai.event.GlobalEventChannel;
@@ -28,8 +30,14 @@ public class Main extends RunMain {
 //        RunMain.initAll();
         createTable();
 //        RunMain.initLevel();
+        //网络图片上传
+        //本地图片上传
+        //byte的图片上传
+        //流的图片上传
 
+        //图片下载
 
+        //文件同上
     }
 
     /**

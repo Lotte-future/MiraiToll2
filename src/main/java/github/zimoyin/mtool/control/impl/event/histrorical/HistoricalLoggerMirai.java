@@ -1,4 +1,4 @@
-package github.zimoyin.mtool.control.impl.histrorical;
+package github.zimoyin.mtool.control.impl.event.histrorical;
 
 import github.zimoyin.mtool.annotation.Controller;
 import github.zimoyin.mtool.annotation.EventType;
@@ -172,12 +172,16 @@ public class HistoricalLoggerMirai {
 
         //获取信息
         HistoricalMessagesSet.Info info = HistoricalMessagesSet.getInstance().get(event.getGroup().getId(), messageIds[0]);
-        String log = new HistoricalMessageInfo().getChain(info.getMessageChain(), false);
-
+        String log = null;
+        MessageChain messageChain = null;
+        if (info != null) {
+            log = new HistoricalMessageInfo().getChain(info.getMessageChain(), false);
+            messageChain = info.getMessageChain();
+        }
         //构建发源信息
         HistoricalMessageEvent.Author sp = new HistoricalMessageEvent.Author(author, event.getGroup().getName(), event.getGroup().getId(), author.getNick(), author.getId(), author.getAvatarUrl());
         //广播事件
-        HistoricalMessageEvent messageEvent = new HistoricalMessageEvent(info.getMessageChain(), event.getMessageTime(), event, log, sp);
+        HistoricalMessageEvent messageEvent = new HistoricalMessageEvent(messageChain, event.getMessageTime(), event, log, sp);
         EventKt.broadcast(messageEvent);
     }
 

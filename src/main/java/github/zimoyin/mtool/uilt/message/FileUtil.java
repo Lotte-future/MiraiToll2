@@ -17,6 +17,7 @@ import java.io.IOException;
  *
  * @throws PermissionDeniedException 当无管理员权限时抛出 (若群仅允许管理员上传)
  */
+@Deprecated
 public class FileUtil {
     private static Logger logger = LoggerFactory.getLogger(FileUtil.class);//日志
 
@@ -55,12 +56,9 @@ public class FileUtil {
         try {
             externalResource = ExternalResource.create(info.getInputStream());
             RemoteFiles files = group.getFiles();
-            if (info.getCallback() != null && info.getListener() != null)
-                files.uploadNewFile(info.getQQServerFilePath(), externalResource, info.getCallback(), info.getListener());
-            else if (info.getListener() != null)
-                files.uploadNewFile(info.getQQServerFilePath(), externalResource, info.getCallback(), info.getListener());
-            else if (info.getCallback() != null)
-                files.uploadNewFile(info.getQQServerFilePath(), externalResource, info.getCallback());
+            if (info.getCallback() != null && info.getListener() != null) files.uploadNewFile(info.getQQServerFilePath(), externalResource, info.getCallback(), info.getListener());
+            else if (info.getListener() != null) files.uploadNewFile(info.getQQServerFilePath(), externalResource, info.getCallback(), info.getListener());
+            else if (info.getCallback() != null) files.uploadNewFile(info.getQQServerFilePath(), externalResource, info.getCallback());
             else files.uploadNewFile(info.getQQServerFilePath(), externalResource);
             ;
         } catch (Exception e) {

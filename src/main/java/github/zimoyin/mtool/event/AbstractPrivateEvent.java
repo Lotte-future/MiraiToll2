@@ -9,6 +9,10 @@ import net.mamoe.mirai.event.AbstractEvent;
 public abstract class AbstractPrivateEvent extends AbstractEvent {
     private Bot bot;
 
+    public AbstractPrivateEvent(Bot bot) {
+        this.bot = bot;
+    }
+
     public Bot getBot() {
         return bot;
     }

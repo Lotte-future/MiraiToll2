@@ -19,6 +19,7 @@ import java.util.UUID;
 /**
  * 构建一个文件描述,以此用于FileUtil 上传文件
  */
+@Deprecated
 public class FileInfo {
     private static Logger logger = LoggerFactory.getLogger(FileInfo.class);//日志
     private HttpClientResult results;

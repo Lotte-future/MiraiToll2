@@ -10,20 +10,38 @@ import github.zimoyin.mtool.command.filter.FilterTable;
 import github.zimoyin.mtool.command.filter.impl.Level;
 import github.zimoyin.mtool.dao.H2Connection;
 import github.zimoyin.application.command.filter.TestFilter;
+import github.zimoyin.mtool.uilt.message.GroupFile;
+import github.zimoyin.mtool.uilt.message.GroupFileSystem;
 import github.zimoyin.mtool.uilt.message.ImageUtils;
 import lombok.extern.slf4j.Slf4j;
+import lombok.var;
+import net.mamoe.mirai.Bot;
+import net.mamoe.mirai.contact.Contact;
+import net.mamoe.mirai.contact.FileSupported;
 import net.mamoe.mirai.contact.Friend;
 import net.mamoe.mirai.contact.Group;
+import net.mamoe.mirai.contact.file.AbsoluteFile;
+import net.mamoe.mirai.contact.file.AbsoluteFileFolder;
+import net.mamoe.mirai.contact.file.AbsoluteFolder;
+import net.mamoe.mirai.contact.file.RemoteFiles;
 import net.mamoe.mirai.event.events.FriendMessageEvent;
 import net.mamoe.mirai.event.events.MessageEvent;
 import net.mamoe.mirai.message.data.*;
+import net.mamoe.mirai.utils.ExternalResource;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.ListIterator;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 @CommandClass
 @ThreadSpace
@@ -65,6 +83,8 @@ public class Test1 {
 
     @Command("t")
     public void text2(CommandData data) throws IOException {
-
+        Group group = data.getGroup();
+        GroupFile groupFile = new GroupFile("源码", group);
+        System.out.println(groupFile.getThisFolder());
     }
 }

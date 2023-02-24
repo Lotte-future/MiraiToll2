@@ -18,7 +18,7 @@ import java.util.function.Consumer;
  * @author JourWon
  * @date Created on 2018年4月19日
  */
-public class HttpClientResult implements Serializable {
+public class HttpClientResult implements Serializable ,AutoCloseable{
 
     private static final long serialVersionUID = 2168152194164783950L;
 
@@ -158,4 +158,8 @@ public class HttpClientResult implements Serializable {
 
     }
 
+    @Override
+    public void close() throws Exception {
+        release();
+    }
 }

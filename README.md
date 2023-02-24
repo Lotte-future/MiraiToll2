@@ -332,7 +332,13 @@ sendMessage(ファッション);
 * [XML](https://github.com/mamoe/mirai/blob/dev/mirai-core-api/src/commonMain/kotlin/message/data/RichMessage.kt)
 
 ### 4. 图片与文件上传下载
-
+* 图片  
+见工具类 [ImageUtils.java](src%2Fmain%2Fjava%2Fgithub%2Fzimoyin%2Fmtool%2Fuilt%2Fmessage%2FImageUtils.java)  
+* 文件  
+见工具类 [FileUtil.java](src%2Fmain%2Fjava%2Fgithub%2Fzimoyin%2Fmtool%2Fuilt%2Fmessage%2FFileUtil.java)  
+或者使用框架封装的文件系统
+[GroupFileSystem.java](src%2Fmain%2Fjava%2Fgithub%2Fzimoyin%2Fmtool%2Fuilt%2Fmessage%2FGroupFileSystem.java)  
+[GroupFile.java](src%2Fmain%2Fjava%2Fgithub%2Fzimoyin%2Fmtool%2Fuilt%2Fmessage%2FGroupFile.java)  
 ### 5. 好友操作
 
 见事件与Friend类
@@ -346,7 +352,7 @@ sendMessage(ファッション);
 见事件与Group类
 
 ### 8. 历史记录
-
+Friend 和 Group 的 getRoamingMessages 方法
 ### 9. [事件列表](https://docs.mirai.mamoe.net/EventList.html#%E7%BE%A4)
 
 ### 10. [过滤信息类型](https://docs.mirai.mamoe.net/Events.html#%E8%BF%87%E6%BB%A4)
