@@ -8,13 +8,13 @@ import github.zimoyin.mtool.annotation.Command;
 import github.zimoyin.mtool.annotation.CommandClass;
 import github.zimoyin.mtool.annotation.Filter;
 import github.zimoyin.mtool.command.CommandData;
+import github.zimoyin.mtool.command.CommandObject;
 import github.zimoyin.mtool.command.filter.impl.Level;
 import lombok.extern.slf4j.Slf4j;
 import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.message.MessageReceipt;
 
 import java.io.IOException;
-import java.util.List;
 
 @Slf4j
 @CommandClass
@@ -36,7 +36,8 @@ public class CommandChatAPI {
     }
 
     @Command("gpt")
-    public String commandChat(CommandData data) {
+    public String commandChat(CommandData data, CommandObject commandObject) {
+
         MessageReceipt<Contact> receipt = data.sendMessage("少女思考中...");
         if (System.currentTimeMillis() - start > 24 * 60 * 60 * 1000) {
             start=System.currentTimeMillis();
@@ -58,6 +59,41 @@ public class CommandChatAPI {
         String text = "访问失败,无法连接至 ChatGPT 服务器";
         try {
             String chat = ChatAPI.getInstance().chat(param, data.getWindowID() + "-" + data.getSenderID());
+            text = JSONObject.parseObject(chat).getJSONArray("choices").getJSONObject(0).get("text").toString().trim();
+            instance.addEntries(param.trim(),text.trim());
+            return text;
+        } catch (IOException e) {
+            log.error("与Chat API 交流时产生异常", e);
+            return "抱歉无法访问到ChatGPT API";
+        } finally {
+            receipt.recall();
+        }
+    }
+
+    @Command("gpt2")
+    public String commandChat2(CommandData data, CommandObject commandObject) {
+        if (true)return "该API无法解析 ChatGPT 返回数据";
+        MessageReceipt<Contact> receipt = data.sendMessage("少女思考中...");
+        if (System.currentTimeMillis() - start > 24 * 60 * 60 * 1000) {
+            start=System.currentTimeMillis();
+            ChatAPI.getInstance().getCachesCount().clear();
+            log.info("ChatGPT： 正在重置缓存数值列表");
+        }
+        String param = data.getParam();
+        //随机返回一个数据库里面都词条
+        ThesaurusCenter instance = ThesaurusCenter.getInstance();
+        String sv = instance.getEntries(param.trim()).stream().findFirst().orElse(null);
+        if (sv != null) return sv;
+        //参数校验
+        if (param.isEmpty()) {
+            return "参数不合法，请保持参数的长度在 1-300 之间";
+        }
+        if (!ChatAPI.getInstance().preChat(data.getWindowID() + "-" + data.getSenderID())) {
+            return "访问失败,请重置会话缓存后再试";
+        }
+        String text = "访问失败,无法连接至 ChatGPT 服务器";
+        try {
+            String chat = ChatAPI.getInstance().chat2(param, ChatAPI.Role.user);
             text = JSONObject.parseObject(chat).getJSONArray("choices").getJSONObject(0).get("text").toString().trim();
             instance.addEntries(param.trim(),text.trim());
             return text;

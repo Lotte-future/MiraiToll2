@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
-import java.util.List;
 
 /**
  * 由 commandSet 进行初始化操作，可以通过 initMethod 方法进行后续添加，通过 commandSet 进行维护
@@ -19,9 +18,9 @@ import java.util.List;
 public class CommandLoadInit {
     //    private ArrayList<CommandObj> commands = new ArrayList<CommandObj>();
     private final Logger logger = LoggerFactory.getLogger(CommandLoadInit.class);
-    private CommandSet<String, CommandObj> commandSet;
+    private CommandSet<String, CommandObject> commandSet;
 
-    public CommandLoadInit(final CommandSet<String, CommandObj> instance) {
+    public CommandLoadInit(final CommandSet<String, CommandObject> instance) {
         this.commandSet = instance;
     }
 
@@ -69,27 +68,27 @@ public class CommandLoadInit {
             //命令所需的事件
             Class<? extends Event> eventClass = annotation.eventType();
             //命令对象
-            CommandObj commandObj = new CommandObj(name, method, eventClass, clz);
+            CommandObject commandObject = new CommandObject(name, method, eventClass, clz);
             //别名
             for (String alia : alias) {
                 if (commandSet.containsKey(alia)) logger.warn(
                         "重复的命令主语[别名] {}; 重复源 [1] {} [2] {}",
                         alia,
                         commandSet.get(alia).getCommandClass().getCanonicalName(),
-                        commandObj.getCommandClass().getCanonicalName()
+                        commandObject.getCommandClass().getCanonicalName()
                 );
                 //放入集合
-                commandSet.put(alia, commandObj);
+                commandSet.put(alia, commandObject);
             }
             //命令主语
             if (commandSet.containsKey(name)) logger.warn(
                     "重复的命令主语 {}; 重复源 [1] {} [2] {}",
                     name,
                     commandSet.get(name).getCommandClass().getCanonicalName(),
-                    commandObj.getCommandClass().getCanonicalName()
+                    commandObject.getCommandClass().getCanonicalName()
             );
             //放入集合
-            commandSet.put(name, commandObj);
+            commandSet.put(name, commandObject);
         }
     }
 
@@ -121,7 +120,7 @@ public class CommandLoadInit {
             logger.warn("注意@Command 描述的事件类型 与 方法参数中事件类型不一致，这将导致从注解的数据类型向下转型到方法的事件类型：{}", method);
     }
 
-    public CommandSet<String, CommandObj> getCommandSet() {
+    public CommandSet<String, CommandObject> getCommandSet() {
         return commandSet;
     }
 }

@@ -22,7 +22,9 @@ public class RunMain extends LoginMirai {
      * 启动框架
      */
     public static void main(String[] args) {
+        //启动框架
         RunMain.run();
+        //启动cli
     }
 
     /**

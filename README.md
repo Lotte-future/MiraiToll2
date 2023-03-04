@@ -185,7 +185,7 @@ public final class ChatGPTQuota extends ApplicationConfig {
     }
 }
 ```
-
+注意: 配置文件的字段最好是JAVA的八大数据类型或者是JSON格式，如果是其他对象请实现接口ApplicationType<你的类的名称> 并重写 parse(String) 方法,请解析该方法中的参数，并返回你构造的实例对象
 
 
 #### 2. 框架配置文件
@@ -392,5 +392,16 @@ At at = new At(qq);//at某人
 AtAll instance = AtAll.INSTANCE;//at所有
 ```
 
-如何知道被AT了：请检测每一条信息，在里面过滤at信息并加以判断
+如何知道被AT了：请检测每一条信息，在里面过滤at信息并加以判断.或使用框架事件([AtMessageEvent.java](src%2Fmain%2Fjava%2Fgithub%2Fzimoyin%2Fmtool%2Fevent%2FAtMessageEvent.java))
 
+### 13. 发送信息前事件
+使用 MessagePreSendEvent 事件来对信息进行~~判断是否发送~~以**及修改发送的内容**
+
+### 14. 停止所有监听器
+//开启监听也是里面的方法
+ListenerSet.complete()
+ListenerSet.cancel()
+
+### 15. 停止所有命令方法
+CommandBroadcast.getInstance().isBroadcast()//停止所有命令,停止后不广播任何命令与过滤器的执行。慎用此方法
+CommandBroadcast.getInstance().isBroadcastCommand()//停止所有命令,但是过滤器是允许被执行的，所以运行他后还可以通过过滤器里面的逻辑来恢复使用

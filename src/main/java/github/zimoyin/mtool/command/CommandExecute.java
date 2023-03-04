@@ -12,14 +12,14 @@ import org.slf4j.LoggerFactory;
  */
 public class CommandExecute {
     private CommandData commandData;
-    private CommandSet<String, CommandObj> commandSet = CommandSet.getInstance();
-    private CommandObj commandObj;
+    private CommandSet<String, CommandObject> commandSet = CommandSet.getInstance();
+    private CommandObject commandObject;
     private Logger logger = LoggerFactory.getLogger(CommandExecute.class);
     private MessageEvent event;
 
     public CommandExecute(CommandData commandData) {
         this.commandData = commandData;
-        this.commandObj = getCommandObject();
+        this.commandObject = getCommandObject();
         event = commandData.getEvent();
     }
 
@@ -31,10 +31,10 @@ public class CommandExecute {
         try {
             //执行命令
             if (CommandConfig.getInstance().getCommandConfigInfo().isAT()){
-                if (MessageData.getAt(event) != null) commandObj.execute(event,commandData);
+                if (MessageData.getAt(event) != null) commandObject.execute(event,commandData);
                 else logger.warn("405 该命令未能在AT机器人的情况下执行，已经被终止执行此命令：{}", commandData.getHeader());
             }else {
-                commandObj.execute(event,commandData);
+                commandObject.execute(event,commandData);
             }
         } catch (Exception e) {
             logger.warn("捕获到命令实例类抛出未处理异常");
@@ -45,7 +45,7 @@ public class CommandExecute {
         return true;
     }
 
-    private CommandObj getCommandObject() {
+    private CommandObject getCommandObject() {
         return commandSet.get(commandData);
     }
 }

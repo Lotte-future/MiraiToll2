@@ -7,7 +7,11 @@ import github.zimoyin.mtool.event.HistoricalMessageEvent;
 import net.mamoe.mirai.Bot;
 import net.mamoe.mirai.contact.Group;
 import net.mamoe.mirai.contact.roaming.RoamingMessages;
+import net.mamoe.mirai.event.events.MessagePostSendEvent;
+import net.mamoe.mirai.event.events.MessagePreSendEvent;
+import net.mamoe.mirai.message.data.Message;
 import net.mamoe.mirai.message.data.MessageChain;
+import net.mamoe.mirai.message.data.MessageChainBuilder;
 
 import java.util.function.Consumer;
 
@@ -22,4 +26,5 @@ public class TestControl {
     public void onHistoricalMessage(FileMessageEvent event){
         System.out.println(event.getSenderName());
     }
+
 }

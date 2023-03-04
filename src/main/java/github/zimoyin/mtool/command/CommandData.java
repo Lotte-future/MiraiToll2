@@ -78,7 +78,7 @@ public class CommandData {
      * 命令信息链
      */
 
-    private MessageChain chain;
+    private MessageChain messageChain;
 
     /**
      * 是否是命令语句
@@ -124,8 +124,8 @@ public class CommandData {
     private Contact contact;
 
 
-    public CommandData(MessageChain chain) {
-        init(chain);
+    public CommandData(MessageChain messageChain) {
+        init(messageChain);
     }
 
     public CommandData(MessageEvent event) {
@@ -142,7 +142,7 @@ public class CommandData {
     }
 
     private void init(MessageChain chain) {
-        this.chain = chain;
+        this.messageChain = chain;
         this.textMessage = MessageData.getTextMessage(chain);
         if (!CommandParsing.isCommandSubjectParsing(textMessage)) {
             this.isCommand = false;

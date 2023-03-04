@@ -8,15 +8,15 @@ import java.util.function.BiConsumer;
  * key:命令名称
  * value:命令具体信息
  */
-public class CommandSet<S,C> extends HashMap<String,CommandObj> {
-    private volatile static  CommandSet<String,CommandObj> INSTANCE = null;
+public class CommandSet<S,C> extends HashMap<String, CommandObject> {
+    private volatile static  CommandSet<String, CommandObject> INSTANCE = null;
     private CommandSet(){
         //初始化
 //        new CommandLoad().init();
     }
-    public static synchronized CommandSet<String,CommandObj> getInstance(){
+    public static synchronized CommandSet<String, CommandObject> getInstance(){
         if (INSTANCE == null){
-            INSTANCE = new CommandSet<String,CommandObj>();
+            INSTANCE = new CommandSet<String, CommandObject>();
             new CommandLoadInit(INSTANCE).init();
         }
         return INSTANCE;
@@ -28,12 +28,12 @@ public class CommandSet<S,C> extends HashMap<String,CommandObj> {
      * @param data
      * @return
      */
-    public CommandObj get(CommandData data) {
+    public CommandObject get(CommandData data) {
         return super.get(data.getHeader());
     }
 
     @Override
-    public void forEach(BiConsumer<? super String, ? super CommandObj> action) {
+    public void forEach(BiConsumer<? super String, ? super CommandObject> action) {
         super.forEach(action);
     }
 }

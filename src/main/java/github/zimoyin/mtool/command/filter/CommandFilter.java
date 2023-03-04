@@ -3,7 +3,7 @@ package github.zimoyin.mtool.command.filter;
 
 import github.zimoyin.mtool.annotation.Filter;
 import github.zimoyin.mtool.command.CommandData;
-import github.zimoyin.mtool.command.CommandObj;
+import github.zimoyin.mtool.command.CommandObject;
 import github.zimoyin.mtool.command.CommandSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
  */
 public class CommandFilter {
     private final CommandData data;
-    private final CommandSet<String, CommandObj> commands = CommandSet.getInstance();
+    private final CommandSet<String, CommandObject> commands = CommandSet.getInstance();
     private Filter annotation;
     private final Logger logger = LoggerFactory.getLogger(CommandFilter.class);
 
@@ -25,9 +25,9 @@ public class CommandFilter {
 
     private void init() {
         //命令对象
-        CommandObj commandObj = commands.get(data);
-        if (commandObj == null) return;
-        annotation = commandObj.getMethod().getAnnotation(Filter.class);
+        CommandObject commandObject = commands.get(data);
+        if (commandObject == null) return;
+        annotation = commandObject.getMethod().getAnnotation(Filter.class);
     }
 
 

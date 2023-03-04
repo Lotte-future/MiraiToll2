@@ -2,15 +2,14 @@ package github.zimoyin.mtool.config.application;
 
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONArray;
+import com.alibaba.fastjson2.JSONObject;
 import github.zimoyin.mtool.uilt.JSONString;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
+import java.lang.reflect.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -20,13 +19,14 @@ import java.util.stream.Collectors;
 /**
  * 应用程序配置文件
  * 注意配置文件中不可出现中文，空格等特殊字符
+ * 注意：类中字段不能出现非配置字段。类中字段必须有 toString 方法
  */
 @Slf4j
 public abstract class ApplicationConfig extends HashMap<String, Object> {
     private final HashMap<String, Object> config = this;
     public final String RootPath = "./data/config/application/";
     public Charset charset = StandardCharsets.UTF_8;
-    private final  List<Field> Fields = getFields();
+    private final List<Field> Fields = getFields();
 
     public ApplicationConfig(boolean isInit) {
         if (isInit) init();
@@ -51,6 +51,7 @@ public abstract class ApplicationConfig extends HashMap<String, Object> {
 
     public void save() throws IOException {
         File file = new File(RootPath + getName() + ".properties");
+        file.getParentFile().mkdirs();
         StringBuffer buffer = new StringBuffer();
         this.forEach((s, s2) -> buffer.append(s).append("=").append(s2.toString()).append("\n"));
         Files.write(file.toPath(), buffer.toString().getBytes());
@@ -78,15 +79,15 @@ public abstract class ApplicationConfig extends HashMap<String, Object> {
     public Object put(String key, Object value) {
         String valArray = instanceofStringArray(value);
         if (valArray != null) value = valArray;
-        caseType(key.trim(),value.toString().trim(),Fields);
+        caseType(key.trim(), value.toString().trim(), Fields);
         return value;
     }
 
     /**
      * 将数组转为 JSON 数组格式
      */
-    private String instanceofStringArray(Object value){
-        if (value instanceof Object[]){
+    private String instanceofStringArray(Object value) {
+        if (value instanceof Object[]) {
 //            Object[] array = (Object[]) value;
             return JSONArray.of(value).toString();
         }
@@ -96,8 +97,8 @@ public abstract class ApplicationConfig extends HashMap<String, Object> {
     /**
      * 将键值对放入hashmap集合，并为相应字段赋值
      *
-     * @param key 键
-     * @param value 值
+     * @param key    键
+     * @param value  值
      * @param fields 字段列表
      */
     private void caseType(String key, String value, List<Field> fields) {
@@ -119,14 +120,43 @@ public abstract class ApplicationConfig extends HashMap<String, Object> {
             super.put(key, Byte.parseByte(value));
         } else if (type.equals(float.class) || type.equals(Float.class)) {
             super.put(key, Float.parseFloat(value));
-        } else {
+        } else if (type.equals(String.class)) {
             super.put(key, value);
+        } else if (type.equals(JSONObject.class)) {
+            try {
+                super.put(key, JSON.parseObject(value));
+            }catch (Exception e){
+                log.warn("无法解析JSON，该字段的值将以 string:string 形式进行了存储，使用get(key)进行读取时注意返回值为string");
+                super.put(key, value);
+            }
+        } else if (type.equals(JSONArray.class)) {
+            try {
+                super.put(key, JSON.parseArray(value));
+            }catch (Exception e){
+                log.warn("无法解析JSON，该字段的值将以 string:string 形式进行了存储，使用get(key)进行读取时注意返回值为string");
+                super.put(key, value);
+            }
+        } else {
+            try {
+                log.info("使用实验功能：通过parse 来构建对象");
+                Method method = type.getMethod("parse", String.class);
+                Object invokeValue = method.invoke(type.newInstance(), value);
+                super.put(key, invokeValue);
+                return;
+            } catch (NoSuchMethodException | InvocationTargetException e) {
+                log.warn("该 {}字段是个对象并且没有或执行 parse(String) 方法失败，无法对该键值对进行存储", key);
+            } catch (InstantiationException | IllegalAccessException e) {
+                log.warn("该 {}字段是个对象并且没有空构造方法，无法对该键值对进行存储", key);
+            }
+            super.put(key, value);
+            log.warn("Application 配置文件中 {} 键值对无法被解析将以 string:string 形式进行了存储，使用get(key)进行读取时注意返回值为string", key);
         }
     }
 
     /**
      * 查找字段
-     * @param name 字段名称
+     *
+     * @param name   字段名称
      * @param fields 字段列表，请通过 getFields 获取
      */
     public Field findField(String name, List<Field> fields) {
@@ -143,16 +173,63 @@ public abstract class ApplicationConfig extends HashMap<String, Object> {
 
     /**
      * 为当前类中所有字段赋值
+     *
      * @param obj 当前类的实例对象
      */
     public void setFieldValue(Object obj) {
         for (Field field : Fields) {
             field.setAccessible(true);
             boolean isFinal = Modifier.isFinal(field.getModifiers());
+            if (isFinal) return;// 如果字段是不可修改的
             try {
-                if (!isFinal) field.set(obj, get(field.getName()));
-            } catch (IllegalAccessException e) {
-                log.warn("无法为 {}类的{}字段的进行注入值", this.getClass().getCanonicalName(), field.getName());
+                Object value = get(field.getName());
+//                field.set(obj, get(field.getName()));
+                Class<?> type = field.getType();
+                if (type.equals(int.class) || type.equals(Integer.class)) {
+                    field.set(obj, value);
+                } else if (type.equals(double.class) || type.equals(Double.class)) {
+                    field.set(obj, value);
+                } else if (type.equals(boolean.class) || type.equals(Boolean.class)) {
+                    field.set(obj, value);
+                } else if (type.equals(short.class) || type.equals(Short.class)) {
+                    field.set(obj, value);
+                } else if (type.equals(byte.class) || type.equals(Byte.class)) {
+                    field.set(obj, value);
+                } else if (type.equals(float.class) || type.equals(Float.class)) {
+                    field.set(obj, value);
+                } else if (type.equals(String.class)) {
+                    field.set(obj, value);
+                } else if (type.equals(Object[].class)) {
+                    log.warn("{} 配置文件中 {} 字段是个数组这可能导致异常出现,当前版本无法解析字段是数组的字段", getName(), field.getName());
+                } else if (type.equals(JSONArray.class)) {
+                    try {
+                        field.set(obj, JSONArray.parse(value.toString()));
+                    }catch (Exception e){
+                        log.error("无法为 {}类的{}字段的进行注入值; 无法解析该JSON", this.getClass().getSimpleName(), field.getName());
+                    }
+                } else if (type.equals(JSONObject.class)) {
+                    try {
+                        field.set(obj, JSONObject.parse(value.toString()));
+                    }catch (Exception e){
+                        log.error("无法为 {}类的{}字段的进行注入值; 无法解析该JSON", this.getClass().getSimpleName(), field.getName());
+                    }
+                } else {
+                    try {
+                        log.info("使用实验功能：通过parse 来构建对象");
+                        Method method = type.getMethod("parse", String.class);
+                        Object invokeValue = method.invoke(type.newInstance(), value.toString());
+                        field.set(obj, invokeValue);
+                        return;
+                    } catch (NoSuchMethodException | InvocationTargetException e) {
+                        log.warn("该 {}字段是个对象并且没有或执行 parse(String) 方法失败，无法对该键值对进行存储", field.getName());
+                    } catch (InstantiationException | IllegalAccessException e) {
+                        log.warn("该 {}字段是个对象并且没有空构造方法，无法对该键值对进行存储", field.getName());
+                    }
+                    log.warn("{} 配置文件中 {} 字段无法被赋值，当前版本无法解析非既定字段类型", getName(), field.getName());
+                    log.warn("{} 配置文件中 {} 字段无法被赋值，请勿通过该字段的 get方法来获取，请通过 HashMap 的 get(key) 方法获取值", getName(), field.getName());
+                }
+            } catch (Exception e) {
+                log.error("无法为 {}类的{}字段的进行注入值", this.getClass().getSimpleName(), field.getName());
             }
         }
     }

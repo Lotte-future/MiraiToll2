@@ -90,7 +90,7 @@ public class HttpClientUtils {
             sslsf = buildSSL();
             //构建URI
             uri = buildURI(url, params);
-        } catch (NoSuchAlgorithmException | KeyStoreException | KeyManagementException | URISyntaxException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
@@ -108,7 +108,7 @@ public class HttpClientUtils {
          * setSocketTimeout：请求获取数据的超时时间(即响应时间)，单位毫秒。 如果访问一个接口，多少时间内无法返回数据，就直接放弃此次调用。
          */
         RequestConfig requestConfig = RequestConfig.custom()
-                .setProxy(setProxy())
+                .setProxy(getProxy())
                 .setConnectTimeout(CONNECT_TIMEOUT)
                 .setSocketTimeout(SOCKET_TIMEOUT)
                 .build();
@@ -232,7 +232,7 @@ public class HttpClientUtils {
          * setSocketTimeout：请求获取数据的超时时间(即响应时间)，单位毫秒。 如果访问一个接口，多少时间内无法返回数据，就直接放弃此次调用。
          */
         RequestConfig requestConfig = RequestConfig.custom()
-                .setProxy(setProxy())
+                .setProxy(getProxy())
                 .setConnectTimeout(CONNECT_TIMEOUT)
                 .setSocketTimeout(SOCKET_TIMEOUT)
                 .build();
@@ -372,11 +372,10 @@ public class HttpClientUtils {
      *
      * @return
      */
-    private static HttpHost setProxy() {
+    private static HttpHost getProxy() {
 //        HttpHost proxy= new HttpHost("139.99.237.62",80,"http");
         HttpHost proxy = null;
-//        proxy = new HttpHost("39.98.45.168", 8081, "http");
-        proxy = null;
+        proxy = new HttpHost("127.0.0.1", 8070, "http");
         return proxy;
     }
 

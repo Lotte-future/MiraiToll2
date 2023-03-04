@@ -3,7 +3,7 @@ package github.zimoyin.mtool.command.impl;
 import github.zimoyin.mtool.annotation.Command;
 import github.zimoyin.mtool.annotation.CommandClass;
 import github.zimoyin.mtool.command.CommandData;
-import github.zimoyin.mtool.command.CommandObj;
+import github.zimoyin.mtool.command.CommandObject;
 import github.zimoyin.mtool.command.CommandSet;
 import github.zimoyin.mtool.config.global.CommandConfig;
 import net.mamoe.mirai.message.data.ForwardMessageBuilder;
@@ -13,7 +13,7 @@ import java.util.HashSet;
 
 @CommandClass
 public final class CommandHelp {
-    private final CommandSet<String, CommandObj> commandSet = CommandSet.getInstance();
+    private final CommandSet<String, CommandObject> commandSet = CommandSet.getInstance();
 
     @Command(value = "help", description = "命令帮助信息", help = "[参数]: 其他命令主语 （可为空）")
     public void onCommandHelp(final CommandData data) {
@@ -37,8 +37,8 @@ public final class CommandHelp {
         //命令个数大于 10 个就启用转发数据类型
         int count = 0;
         int find = 10;
-        HashSet<CommandObj> valuesSet = new HashSet<CommandObj>();
-        for (CommandObj value : commandSet.values()) {
+        HashSet<CommandObject> valuesSet = new HashSet<CommandObject>();
+        for (CommandObject value : commandSet.values()) {
             String description = value.getHelp().getDescription();
             if (valuesSet.contains(value)) continue;
             valuesSet.add(value);
@@ -60,9 +60,9 @@ public final class CommandHelp {
     private void createHelp(CommandData data) {
         StringBuilder buffer = new StringBuilder();
         for (String param : data.getParams()) {
-            CommandObj commandObj = commandSet.get(param);
-            if (commandObj == null) continue;
-            String help = commandObj.getHelp().getHelp();
+            CommandObject commandObject = commandSet.get(param);
+            if (commandObject == null) continue;
+            String help = commandObject.getHelp().getHelp();
             if (help.isEmpty()) continue;
             buffer.append(param).append(": ").append("\n\t").append(help).append("\n");
             buffer.append("==============================").append("\n");

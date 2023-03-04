@@ -2,7 +2,7 @@ package github.zimoyin.mtool.command.filter.impl;
 
 import github.zimoyin.mtool.annotation.Filter;
 import github.zimoyin.mtool.command.CommandData;
-import github.zimoyin.mtool.command.CommandObj;
+import github.zimoyin.mtool.command.CommandObject;
 import github.zimoyin.mtool.command.CommandSet;
 import github.zimoyin.mtool.command.filter.AbstractFilter;
 import github.zimoyin.mtool.command.filter.CommandFilter;
@@ -16,16 +16,16 @@ import org.slf4j.LoggerFactory;
  */
 @Filter
 public class LevelFilter extends AbstractFilter {
-    private final CommandSet<String, CommandObj> commands = CommandSet.getInstance();
+    private final CommandSet<String, CommandObject> commands = CommandSet.getInstance();
     private Filter annotation;
     private final Logger logger = LoggerFactory.getLogger(CommandFilter.class);
 
 
     @Override
     public boolean filter(CommandData data) {
-        CommandObj commandObj = commands.get(data);
-        if (commandObj == null) return true;
-        annotation = commandObj.getMethod().getAnnotation(Filter.class);
+        CommandObject commandObject = commands.get(data);
+        if (commandObject == null) return true;
+        annotation = commandObject.getMethod().getAnnotation(Filter.class);
         return LevelFilter(data.getEvent());
     }
 

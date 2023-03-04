@@ -10,12 +10,15 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import net.mamoe.mirai.event.Event;
 import net.mamoe.mirai.event.events.MessageEvent;
+import net.mamoe.mirai.message.data.ForwardMessage;
+import net.mamoe.mirai.message.data.Message;
+import net.mamoe.mirai.message.data.MessageChain;
+import net.mamoe.mirai.message.data.SingleMessage;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.function.Predicate;
 
 
 /**
@@ -26,7 +29,7 @@ import java.util.function.Predicate;
 @ToString
 
 @Slf4j
-public class CommandObj {
+public class CommandObject {
     /**
      * 是否运行执行此项命令,为true运行执行，false 不允许执行
      */
@@ -57,6 +60,11 @@ public class CommandObj {
      * 该命令的Help
      */
     private CommandHelp help;
+    /**
+     * 针对某一具体命令的命令方法参数传参对象表，里面存储命令所需的对象。该对象对命令来说是唯一的
+     */
+    private final HashMap<Class<?>, Object> classObjectHashMap = new HashMap<Class<?>, Object>();
+
 
     /**
      * @param name          命令的名称
@@ -65,11 +73,11 @@ public class CommandObj {
      * @param commandObject 命令类的对象
      * @param commandClass  命令类的class
      */
-    public CommandObj(String name,
-                      Method method,
-                      Class<? extends Event> eventClass,
-                      Object commandObject,
-                      Class<?> commandClass) {
+    public CommandObject(String name,
+                         Method method,
+                         Class<? extends Event> eventClass,
+                         Object commandObject,
+                         Class<?> commandClass) {
         this.name = name;
         this.method = method;
         this.eventClass = eventClass;
@@ -78,10 +86,10 @@ public class CommandObj {
     }
 
 
-    public CommandObj(String name,
-                      Method method,
-                      Class<? extends Event> eventClass,
-                      Object commandObject) {
+    public CommandObject(String name,
+                         Method method,
+                         Class<? extends Event> eventClass,
+                         Object commandObject) {
         this.name = name;
         this.method = method;
         this.eventClass = eventClass;
@@ -89,7 +97,7 @@ public class CommandObj {
         this.commandClass = commandObject.getClass();
     }
 
-    public CommandObj(String name, Method method, Class<? extends Event> eventClass, Class<?> commandClass) throws InstantiationException, IllegalAccessException {
+    public CommandObject(String name, Method method, Class<? extends Event> eventClass, Class<?> commandClass) throws InstantiationException, IllegalAccessException {
         this.name = name;
         this.method = method;
         this.eventClass = eventClass;
@@ -97,7 +105,7 @@ public class CommandObj {
         this.commandObject = commandClass.newInstance();
     }
 
-    public CommandObj(Method method, Class<?> commandClass) throws InstantiationException, IllegalAccessException {
+    public CommandObject(Method method, Class<?> commandClass) throws InstantiationException, IllegalAccessException {
         this.method = method;
         this.commandClass = commandClass;
 
@@ -115,7 +123,7 @@ public class CommandObj {
      * @throws IllegalAccessException
      * @throws InstantiationException
      */
-    public void execute(MessageEvent event,CommandData commandData) throws InvocationTargetException, IllegalAccessException, InstantiationException {
+    public void execute(MessageEvent event, CommandData commandData) throws InvocationTargetException, IllegalAccessException, InstantiationException {
         if (!isExecute) {
             log.debug("{} 命令已经被关闭无法被执行 --- {}", getName(), getMethod());
             return;
@@ -126,6 +134,7 @@ public class CommandObj {
 //        if (parameterTypes[0].isAssignableFrom(event.getClass())) method.invoke(commandObject, event);
 //        else if (parameterTypes[0].isAssignableFrom(CommandData.class)) method.invoke(commandObject, new CommandData(event));
         //上面代码更新为下面代码
+        //参数说明：里面参数为没有空构造参数以及特殊的实例对象
         invoke(
                 //机器人相关
                 event,//事件
@@ -152,14 +161,33 @@ public class CommandObj {
         if (commandObject == null) commandObject = commandClass.newInstance();
         Class<?>[] types = method.getParameterTypes();
         Object[] objects = sortObjects(types, objectToMap(args));
-        Object invoke = method.invoke(commandObject, objects);
+        Object invoke = method.invoke(commandObject, objects);//执行方法
 
         //如果有返回值的话
-        if (method.getReturnType().equals(String.class) && invoke != null && invoke.toString() != null) {
-            Object obj = Arrays.stream(args).filter(object -> object.getClass().isAssignableFrom(CommandData.class)).findFirst().orElse(null);
+//        if (method.getReturnType().equals(String.class) && invoke != null && invoke.toString() != null) {
+        if (invoke != null) {
+            //从参数列表过滤出 CommandData 对象
+            Object obj = Arrays.stream(args).filter(object -> CommandData.class.isAssignableFrom(object.getClass())).findFirst().orElse(null);
             if (obj == null) return;
             CommandData data = (CommandData) obj;
-            data.sendMessage(invoke.toString());
+            //根据返回值类型进行发送信息
+//            Class<?> returnClass = invoke.getClass();
+            Class<?> returnClass = method.getReturnType();
+            if (MessageChain.class.isAssignableFrom(returnClass)) {
+                data.sendMessage((MessageChain) invoke);
+            }else if (ForwardMessage.class.isAssignableFrom(returnClass)){
+                data.sendMessage((ForwardMessage) invoke);
+            }else if (SingleMessage.class.isAssignableFrom(returnClass)){
+                data.sendMessage((SingleMessage) invoke);
+            }else if (Message.class.isAssignableFrom(returnClass)){
+                data.sendMessage((Message) invoke);
+            }else if (String.class.isAssignableFrom(returnClass)){
+                data.sendMessage((String) invoke);
+            }else {
+                data.sendMessage(invoke.toString());
+                log.warn("该方法的返回值没有的得到正确的处理，这将调用该返回值的 toString 方法来发送到对话窗口",new NullPointerException("无法解析该数据类型: "+invoke.getClass()));
+            }
+
         }
     }
 
@@ -187,10 +215,10 @@ public class CommandObj {
             if (objs[i] == null) {
                 //尝试new一个，如果失败就抛出异常
                 try {
-                    objs[i] = types[i].newInstance();
+                    objs[i] = classObjectHashMap.getOrDefault(types[i], types[i].newInstance());
+                    classObjectHashMap.put(types[i], objs[i]);
                 } catch (Exception e) {
-                    throw new IllegalArgumentException("参数列表无法找到的参数:" + types[i], new NullPointerException("无法提供反射创建该参数的实例对象:" + types[i]));
-
+                    throw new IllegalArgumentException("参数列表无法找到的参数:" + types[i], new NullPointerException("无法反射创建该参数的实例对象:" + types[i]));
                 }
             }
         }

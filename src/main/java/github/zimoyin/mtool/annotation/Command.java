@@ -11,6 +11,7 @@ import java.lang.annotation.*;
 @Inherited
 
 /**
+ * 注册命令方法
  * 改进计划
  *  让eventType字段没有填写时候，直接扫描该注解标注的方法的参数类型(这需要对CommandLoader类的安全检查方法进行修改 （修改完毕）)
  */

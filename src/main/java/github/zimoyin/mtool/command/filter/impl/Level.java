@@ -20,7 +20,7 @@ public enum Level {
     /**
      * 普通成员
      */
-    UNLevel(10086)
+    UNLevel(3)
     ;
     private int level;
 
