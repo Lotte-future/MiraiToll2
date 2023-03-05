@@ -34,7 +34,7 @@ public class Listener {
     private String prefix = ">";
 
     @Deprecated
-    public Listener(boolean flag){
+    public Listener(boolean flag) {
         br = null;
     }
 
@@ -46,7 +46,7 @@ public class Listener {
         try {
             br.close();
         } catch (IOException e) {
-            log.error("Error while closing BufferedReader",e);
+            log.error("Error while closing BufferedReader", e);
         }
     }
 
@@ -57,7 +57,7 @@ public class Listener {
         try {
             br.close();
         } catch (IOException e) {
-            log.error("Error while closing BufferedReader",e);
+            log.error("Error while closing BufferedReader", e);
         }
     }
 
@@ -70,11 +70,11 @@ public class Listener {
         while (!stop) {
             try {
                 Thread.sleep(100);
-                if (!lineIsNull)System.out.print("\n"+prefix+" ");
-                else System.out.print(prefix+" ");
+                if (!lineIsNull) System.out.print("\n" + prefix + " ");
+                else System.out.print(prefix + " ");
                 //读取命令
                 String read = br.readLine();
-                if (read == null || read.length() == 0){
+                if (read == null || read.length() == 0) {
                     lineIsNull = true;
                     continue;
                 }
@@ -125,6 +125,8 @@ public class Listener {
      * @throws IllegalAccessException
      */
     public void setParameter(CommandObject command, Object instance, String[] split) throws IllegalAccessException {
+        //如果是零个参数
+        if (command.getParameters().size() == 0) return;
         //获取所有参数
         List<String> lineParameters = new ArrayList<>();
         boolean isParameter = false;
@@ -132,9 +134,24 @@ public class Listener {
             if (isParameter) lineParameters.add(sp);
             if (command.getName().equalsIgnoreCase(sp)) isParameter = true;
         }
+        //如果命令行没有参数
+        if (lineParameters.size() == 0) return;
         //创建一个数组，当 lineParameters 数组中某一元素被访问后，该数组中同样位置的数设置为-1
         int[] counts = new int[lineParameters.size()];
         //设置值
+        //如果有一个或零个值
+        if (command.getParameters().size() <=1) {
+            CommandObject.Parameter parameter = command.getParameters().get(0);
+            //赋值
+            Field field = parameter.getField();
+            String value = lineParameters.get(0);
+            field.setAccessible(true);
+            Object caseValue = caseValue(parameter.getType(), value);
+            if (caseValue != null) field.set(instance, caseValue);
+            if (isLog) log.debug("{}: {}", parameter.getName(), value);
+            return;
+        }
+        //有多个值
         for (CommandObject.Parameter parameter : command.getParameters()) {
             //查找参数所在位置
             int index = index(lineParameters, parameter);
@@ -161,8 +178,10 @@ public class Listener {
             if (isLog) log.debug("{}: {}", key, value);
         }
         //如果有未被访问到的参数就抛出异常
+        //如果命令类只有一个或者零个参数则不检查
         for (int count : counts) {
-            if (count >= 0) throw new IllegalArgumentException("未知的参数: " + lineParameters.get(count));
+            if (count >= 0 && command.getParameters().size() > 1)
+                throw new IllegalArgumentException("未知的参数: " + lineParameters.get(count));
         }
     }
 

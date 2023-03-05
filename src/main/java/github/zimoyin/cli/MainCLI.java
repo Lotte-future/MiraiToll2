@@ -13,10 +13,11 @@ import java.util.function.BiConsumer;
 
 public class MainCLI {
     public static void main(String[] args) throws NoSuchMethodException, IllegalAccessException {
-        System.out.println(Arrays.toString(args));
-        new MainArgs(ShellTest.class,args);
-        System.exit(0);
-        CommandManager.initialize().forEach((aClass, commandObject) -> System.out.println(commandObject));
-        Listener listener = new Listener(System.in);
+        run(null,null);
+    }
+    public static Listener run(Class<?> cls, String[] args) throws NoSuchMethodException, IllegalAccessException {
+        if (cls != null && args != null && args.length > 0) new MainArgs(cls, args);
+        CommandManager.initialize();
+        return new Listener(System.in);
     }
 }

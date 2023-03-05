@@ -1,5 +1,6 @@
 package github.zimoyin.application;
 
+import github.zimoyin.cli.MainCLI;
 import github.zimoyin.mtool.annotation.EventType;
 import github.zimoyin.mtool.command.filter.FilterTable;
 import github.zimoyin.mtool.config.global.LevelConfig;
@@ -26,18 +27,12 @@ import java.util.function.Consumer;
 public class Main extends RunMain {
     public static void main(String[] args) {
         RunMain.run();
-//        info.getLevels().forEach(System.out::println);
-//        RunMain.initAll();
         createTable();
-//        RunMain.initLevel();
-        //网络图片上传
-        //本地图片上传
-        //byte的图片上传
-        //流的图片上传
-
-        //图片下载
-
-        //文件同上
+        try {
+            MainCLI.run(null,args);
+        } catch (Exception e) {
+            log.error("CLI ERROR" , e);
+        }
     }
 
     /**
