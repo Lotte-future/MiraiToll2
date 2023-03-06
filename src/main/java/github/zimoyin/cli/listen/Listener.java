@@ -139,8 +139,8 @@ public class Listener {
         //创建一个数组，当 lineParameters 数组中某一元素被访问后，该数组中同样位置的数设置为-1
         int[] counts = new int[lineParameters.size()];
         //设置值
-        //如果有一个或零个值
-        if (command.getParameters().size() <=1) {
+        //如果参数有一个或零个值，并且命令行参数为1个
+        if (command.getParameters().size() <=1 && lineParameters.size() == 1) {
             CommandObject.Parameter parameter = command.getParameters().get(0);
             //赋值
             Field field = parameter.getField();

@@ -1,5 +1,5 @@
 ## 创建命令
-当命令有一个或零个时，允许省略命令参数名称直接附带参数值即可，如：help -help login  -> help login
+当命令有一个或零个时，允许省略命令参数名称直接附带参数值即可，如：help -help login  -> help login 。此表示下前一种为错误表示
 ```java
 @Shell(value = "login",alias={})
 public class ShellTest implements IShell {

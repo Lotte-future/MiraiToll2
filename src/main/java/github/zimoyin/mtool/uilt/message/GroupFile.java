@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 @Builder
 public class GroupFile {
     /**
-     * 文件在服务器的路径
+     * 文件在服务器的具体路径
      */
     private String path;
     /**
@@ -86,15 +86,15 @@ public class GroupFile {
     /**
      * 表示远程文件
      */
-    private AbsoluteFile thisFile;
+    private AbsoluteFile thisRemoteFile;
     /**
      * 表示远程文件列表 (管理器).
      */
-    private AbsoluteFolder thisFolder;
+    private AbsoluteFolder thisRemoteFolder;
     /**
      * 绝对文件或目录标识. 精确表示一个远程文件. 不会受同名文件或目录的影响.
      */
-    private FileSupported thisFileSupported;
+    private FileSupported thisRemoteFileSupported;
     /**
      * 文件所在的群
      */
@@ -104,7 +104,7 @@ public class GroupFile {
      */
     private GroupFileSystem system;
 
-    private GroupFile(String path, String fileName, boolean isDirectory, boolean isFile, GroupFile parentFile, long expiryTime, long createTime, long lastModifiedTime, String fileID, String fileAuthor, long fileAuthorID, long size, byte[] MD5, byte[] sha1, boolean root, RemoteFiles thisRemoteFiles, AbsoluteFile thisFile, AbsoluteFolder thisFolder, FileSupported thisFileSupported, Group group, GroupFileSystem system) {
+    private GroupFile(String path, String fileName, boolean isDirectory, boolean isFile, GroupFile parentFile, long expiryTime, long createTime, long lastModifiedTime, String fileID, String fileAuthor, long fileAuthorID, long size, byte[] MD5, byte[] sha1, boolean root, RemoteFiles thisRemoteFiles, AbsoluteFile thisRemoteFile, AbsoluteFolder thisRemoteFolder, FileSupported thisRemoteFileSupported, Group group, GroupFileSystem system) {
         this.path = path;
         this.fileName = fileName;
         this.isDirectory = isDirectory;
@@ -121,9 +121,9 @@ public class GroupFile {
         this.sha1 = sha1;
         this.root = root;
         this.thisRemoteFiles = thisRemoteFiles;
-        this.thisFile = thisFile;
-        this.thisFolder = thisFolder;
-        this.thisFileSupported = thisFileSupported;
+        this.thisRemoteFile = thisRemoteFile;
+        this.thisRemoteFolder = thisRemoteFolder;
+        this.thisRemoteFileSupported = thisRemoteFileSupported;
         this.group = group;
         this.system = system;
     }
@@ -143,9 +143,9 @@ public class GroupFile {
         //表示一个远程文件或目录.
         thisRemoteFiles = files;
         //表示远程文件列表 (管理器).
-        thisFolder = files.getRoot();
+        thisRemoteFolder = files.getRoot();
         //绝对文件或目录标识. 精确表示一个远程文件. 不会受同名文件或目录的影响.
-        thisFileSupported = files.getContact();
+        thisRemoteFileSupported = files.getContact();
         this.group = group;
         this.system = groupFileSystem;
     }
@@ -162,7 +162,8 @@ public class GroupFile {
      * 文件的URL
      */
     public String getURL() {
-        return thisFile.getUrl();
+        if (isDirectory) return null;
+        return thisRemoteFile.getUrl();
     }
 
     /**
@@ -181,9 +182,9 @@ public class GroupFile {
      * 构建当前的文件对象对其字段进行赋值。
      */
     private void buildThisGroupFile(GroupFile file) {
-        this.thisFolder = file.getThisFolder();
+        this.thisRemoteFolder = file.getThisRemoteFolder();
         this.thisRemoteFiles = file.getThisRemoteFiles();
-        this.thisFile = file.getThisFile();
+        this.thisRemoteFile = file.getThisRemoteFile();
         this.group = file.getGroup();
         this.system = file.getSystem();
         this.path = file.getPath();
@@ -203,14 +204,14 @@ public class GroupFile {
 
     public List<GroupFile> list() {
         if (isFile) throw new IllegalArgumentException("无法对一个文件进行文件夹遍历");
-        List<AbsoluteFolder> collect = thisFolder.foldersStream().collect(Collectors.toList());
-        List<AbsoluteFile> collect1 = thisFolder.filesStream().collect(Collectors.toList());
+        List<AbsoluteFolder> collect = thisRemoteFolder.foldersStream().collect(Collectors.toList());
+        List<AbsoluteFile> collect1 = thisRemoteFolder.filesStream().collect(Collectors.toList());
         List<GroupFile> list = new ArrayList<GroupFile>();
         HashMap<String, GroupFile> indexMap = this.system.getIndexMap();
         for (AbsoluteFolder file : collect) {
             GroupFile build = GroupFile.builder()
                     .thisRemoteFiles(file.getContact().getFiles())
-                    .thisFolder(file)
+                    .thisRemoteFolder(file)
                     .group(group)
                     .system(getSystem())
                     .path(file.getName())
@@ -231,8 +232,8 @@ public class GroupFile {
         for (AbsoluteFile file : collect1) {
             GroupFile build = GroupFile.builder()
                     .thisRemoteFiles(file.getContact().getFiles())
-                    .thisFolder(this.thisFolder)
-                    .thisFile(file)
+                    .thisRemoteFolder(this.thisRemoteFolder)
+                    .thisRemoteFile(file)
                     .group(group)
                     .system(getSystem())
                     .path(file.getName())
@@ -267,16 +268,16 @@ public class GroupFile {
             indexMap.put(this.path, this);
         }
         //更新名称
-        if (this.isFile) return thisFile.renameTo(name);
-        else return thisFolder.renameTo(name);
+        if (this.isFile) return thisRemoteFile.renameTo(name);
+        else return thisRemoteFolder.renameTo(name);
     }
 
     /**
      * 删除文件
      */
     public boolean delete() {
-        if (this.isFile) return thisFile.delete();
-        else return thisFolder.delete();
+        if (this.isFile) return thisRemoteFile.delete();
+        else return thisRemoteFolder.delete();
     }
 
     /**
@@ -291,7 +292,7 @@ public class GroupFile {
         if (this.isFile) {
             HashMap<String, GroupFile> indexMap = this.system.getIndexMap();
             indexMap.remove(this.path);
-            move = thisFile.moveTo(folder);
+            move = thisRemoteFile.moveTo(folder);
             if (move) this.path = path;
             indexMap.put(this.path, this);
         }
@@ -303,7 +304,7 @@ public class GroupFile {
      */
     public AbsoluteFolder mkdir(String folder) {
         if (isDirectory) {
-            return thisFolder.createFolder(folder);
+            return thisRemoteFolder.createFolder(folder);
         }
         return null;
     }
@@ -328,7 +329,7 @@ public class GroupFile {
     public AbsoluteFile uploadFile(String name, ExternalResource resource, ProgressionCallback<AbsoluteFile, Long> call) {
         if (name == null || resource == null) throw new NullPointerException("name and resource  must not be null");
         if (this.isFile) this.delete();
-        return getThisFolder().uploadNewFile(name, resource, call);
+        return getThisRemoteFolder().uploadNewFile(name, resource, call);
     }
 
     /**
@@ -342,7 +343,7 @@ public class GroupFile {
      */
     public AbsoluteFile uploadNewFile(String name, ExternalResource resource, ProgressionCallback<AbsoluteFile, Long> call) {
         if (name == null || resource == null) throw new NullPointerException("name and resource  must not be null");
-        if (this.isDirectory) return getThisFolder().uploadNewFile(name, resource, call);
+        if (this.isDirectory) return getThisRemoteFolder().uploadNewFile(name, resource, call);
         else throw new IllegalArgumentException("这个GroupFile 是一个文件对象，无法对文件对象进行上传文件操作");
     }
 
@@ -357,7 +358,7 @@ public class GroupFile {
     public AbsoluteFile uploadNewFile(File file, ProgressionCallback<AbsoluteFile, Long> call) throws IOException {
         if (file == null) throw new NullPointerException("file  must not be null");
         try (ExternalResource resource = ExternalResource.create(file)) {
-            if (this.isDirectory) return getThisFolder().uploadNewFile(file.getName(), resource, call);
+            if (this.isDirectory) return getThisRemoteFolder().uploadNewFile(file.getName(), resource, call);
             else throw new IllegalArgumentException("这个GroupFile 是一个文件对象，无法对文件对象进行上传文件操作");
         }
     }

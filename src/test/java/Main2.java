@@ -14,8 +14,11 @@ import net.mamoe.mirai.message.data.MessageChain;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.regex.Matcher;
@@ -26,7 +29,9 @@ import java.util.regex.Pattern;
 public class Main2 {
     public static void main(String[] args) throws NoSuchFieldException, InstantiationException, IllegalAccessException, IOException {
 
-        System.out.println(ChatAPI.getInstance().chat2("你好", ChatAPI.Role.system));
+        String n = "/5515/../333/242";
+        Path path = Paths.get(".");
+        System.out.println(path.equals("."));
     }
 
 
