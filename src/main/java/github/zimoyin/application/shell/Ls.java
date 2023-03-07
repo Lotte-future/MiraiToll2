@@ -25,6 +25,14 @@ public class Ls implements IShell {
 
     @Override
     public void execute() {
+        try {
+            execute0();
+        }catch (Exception e) {
+            System.err.println("执行命令失败: "+e.getClass().getSimpleName()+"  "+e.getMessage());
+        }
+    }
+
+    private void execute0(){
         ShellParametersCentre centre = ShellParametersCentre.getInstance();
 //        centre.put("pwd", "/3619430796/713584481/");
         StringBuffer buffer = new StringBuffer();

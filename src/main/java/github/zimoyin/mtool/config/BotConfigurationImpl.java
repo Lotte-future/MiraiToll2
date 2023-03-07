@@ -29,6 +29,7 @@ public class BotConfigurationImpl extends BotConfiguration {
     private HeartbeatStrategy register = HeartbeatStrategy.REGISTER;
     //登录协议
     private MiraiProtocol version = MiraiProtocol.ANDROID_PAD;
+//    private MiraiProtocol version = MiraiProtocol.ANDROID_WATCH;
     //是否关闭log日志
     private boolean isLog = false;
     //是否关闭net日志

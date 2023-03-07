@@ -94,6 +94,7 @@ public class RunMain extends LoginMirai {
     public static void run(BotConfiguration configuration) {
         //初始化框架
         initAll();
+        log.info("框架初始化完成");
         //登录
         LoginMirai.login(configuration);
     }
@@ -101,6 +102,7 @@ public class RunMain extends LoginMirai {
     public static void run() {
         //初始化框架
         initAll();
+        log.info("框架初始化完成");
         //登录
         LoginMirai.login(null);
     }
@@ -109,6 +111,7 @@ public class RunMain extends LoginMirai {
     public static void run(long id, String password) {
         //初始化框架
         initAll();
+        log.info("框架初始化完成");
         //登录
         Login.login(id, password);
     }

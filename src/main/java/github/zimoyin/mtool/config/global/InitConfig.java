@@ -23,7 +23,6 @@ public final class InitConfig {
 
     //将jar内的配置文件扔到外面
     public static void init() throws IOException {
-
         logger.info("MiraiTool 正在启动中....." + "\n" +
                 "   __   ____    ___    ___    ____   _  __  _____\n" +
                 "  / /  / __ \\  / _ |  / _ \\  /  _/  / |/ / / ___/\n" +

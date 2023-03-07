@@ -14,8 +14,9 @@ import java.util.List;
 public class MainArgs extends Listener {
     private final CommandObject commandObject;
     private final Class<?> clazz;
+
     public MainArgs(Class<?> cls, String[] args) throws IllegalAccessException {
-        super(false);
+        close();
         this.clazz = cls;
         commandObject = new CommandObject(cls, null);
         List<String> arg = new ArrayList<String>();

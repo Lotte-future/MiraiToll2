@@ -1,6 +1,7 @@
 package github.zimoyin.application;
 
 import github.zimoyin.cli.MainCLI;
+import github.zimoyin.cli.listen.Listener;
 import github.zimoyin.mtool.annotation.EventType;
 import github.zimoyin.mtool.command.filter.FilterTable;
 import github.zimoyin.mtool.config.global.LevelConfig;
@@ -9,6 +10,7 @@ import github.zimoyin.mtool.control.ListenerObj;
 import github.zimoyin.mtool.control.ListeningRegistration;
 import github.zimoyin.mtool.run.RunMain;
 import github.zimoyin.application.dao.table.CreateTable;
+import github.zimoyin.mtool.uilt.FindClass;
 import kotlin.jvm.functions.Function1;
 import lombok.extern.slf4j.Slf4j;
 import net.mamoe.mirai.Bot;
@@ -29,7 +31,10 @@ public class Main extends RunMain {
         RunMain.run();
         createTable();
         try {
-            MainCLI.run(null,args);
+            Listener listener = MainCLI.run(null, args, FindClass.getResultsToClasses().toArray(new Class[0]));
+            listener.setPrefix("");
+            System.out.println("控制台启动成功,输入 help 来查看更多命令。");
+            listener.run();
         } catch (Exception e) {
             log.error("CLI ERROR" , e);
         }

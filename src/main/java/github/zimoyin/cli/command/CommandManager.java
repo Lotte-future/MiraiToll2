@@ -19,10 +19,10 @@ public class CommandManager extends HashMap<Class<?>, CommandObject> {
         return INSTANCE;
     }
 
-    public static CommandManager initialize() {
+    public static CommandManager initialize(Class<?>...classes) {
         //加载命令
         try {
-            new CommandLoader();
+            new CommandLoader(classes);
         } catch (Exception e) {
             log.error("无法加载所有命令", e);
         }

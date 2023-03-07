@@ -33,27 +33,24 @@ public class Listener {
     private boolean isLog = false;//是否记录日志
     private String prefix = ">";
 
-    @Deprecated
-    public Listener(boolean flag) {
-        br = null;
-    }
-
 
     public Listener() {
         InputStreamReader is = new InputStreamReader(System.in); //new构造InputStreamReader对象
         br = new BufferedReader(is); //拿构造的方法传到BufferedReader中，此时获取到的就是整个缓存流
-        init();
-        try {
-            br.close();
-        } catch (IOException e) {
-            log.error("Error while closing BufferedReader", e);
-        }
+
     }
 
     public Listener(InputStream in) {
         InputStreamReader is = new InputStreamReader(in); //new构造InputStreamReader对象
         br = new BufferedReader(is); //拿构造的方法传到BufferedReader中，此时获取到的就是整个缓存流
-        init();
+    }
+    public Listener run(){
+        run0();
+        close();
+        return this;
+    }
+
+    public void close(){
         try {
             br.close();
         } catch (IOException e) {
@@ -61,7 +58,7 @@ public class Listener {
         }
     }
 
-    private synchronized void init() {
+    private synchronized void run0() {
         manager = CommandManager.getInstance();
         boolean lineIsNull = false;
         //重定向输出
@@ -110,8 +107,7 @@ public class Listener {
             } catch (IllegalAccessException e) {
                 log.error("无法为命令类中的字段进行赋值", e);
             } catch (Exception e) {
-                if (isLog) log.error("无法处理的异常: {}", e.getMessage());
-                else System.err.println("Error: " + e.getMessage());
+                log.error("无法处理的异常: {}", e.getMessage());
             }
         }
     }

@@ -1,19 +1,18 @@
 {
   "systems": [],
   "levels": [
-    //配置群权限（组）
     {
-      "groupid": 0,//群id
-      "roots": [],//root权限....
+      "实例一":"如下，分别为，要授权的群，授权列表等",
+      "groupid": 1,
+      "roots": [1,2,3],
       "firsts": [],
       "seconds": []
     },
     {
-      "groupid": 0,//群id
-      "roots": [],//root权限....
+      "groupid": 2,
+      "roots": [],
       "firsts": [],
       "seconds": []
     }
-    //, ....
   ]
 }

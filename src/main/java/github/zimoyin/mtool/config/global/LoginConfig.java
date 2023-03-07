@@ -13,8 +13,9 @@ public class LoginConfig{
     private static final Logger logger = LoggerFactory.getLogger(LoginConfig.class);
     private static LoginConfig loginConfig;
     private LoginInfo loginInfo;
+    private static boolean isInitialized;
     private LoginConfig() throws Exception {
-        Config.init();
+        if (!isInitialized)Config.init();
         String read = JsonSerializeUtil.read("./data/config/gloval/login.json");
         loginInfo = JSONObject.parseObject(read, LoginInfo.class);
     }
@@ -23,8 +24,9 @@ public class LoginConfig{
             try {
                 loginConfig = new LoginConfig();
             } catch (Exception e) {
-                logger.error("无法加载到登录信息文件,请将里面的注释移除",e);
+                logger.error("无法加载到登录信息文件,请检查配置文件是否配置正确");
             }
+            isInitialized = true;
         }
         return loginConfig;
     }
